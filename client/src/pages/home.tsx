@@ -125,8 +125,8 @@ export default function Home() {
       <section className="py-12 px-4 bg-gradient-to-r from-forest-green to-nature-green text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">Join Our Wellness Community</h3>
-          <p className="text-lg text-white/95 mb-8 font-medium">
-            Become a NatureVital partner and share the power of natural wellness while building your own business.
+          <p className="text-lg text-white mb-8 font-semibold drop-shadow-md">
+            Become a Herbal Wellness Clinic partner and share the power of natural wellness while building your own business.
           </p>
           
           <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -134,22 +134,22 @@ export default function Home() {
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-bold mb-2 text-white text-lg">Competitive Commissions</h4>
-              <p className="text-sm text-white/90 font-medium">Earn up to 30% on personal sales and team bonuses</p>
+              <h4 className="font-bold mb-2 text-white text-lg drop-shadow-md">Competitive Commissions</h4>
+              <p className="text-sm text-white font-semibold drop-shadow-md">Earn up to 30% on personal sales and team bonuses</p>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-bold mb-2 text-white text-lg">Comprehensive Training</h4>
-              <p className="text-sm text-white/90 font-medium">Access to product knowledge and business training</p>
+              <h4 className="font-bold mb-2 text-white text-lg drop-shadow-md">Comprehensive Training</h4>
+              <p className="text-sm text-white font-semibold drop-shadow-md">Access to product knowledge and business training</p>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-bold mb-2 text-white text-lg">Supportive Community</h4>
-              <p className="text-sm text-white/90 font-medium">Join a network of passionate wellness advocates</p>
+              <h4 className="font-bold mb-2 text-white text-lg drop-shadow-md">Supportive Community</h4>
+              <p className="text-sm text-white font-semibold drop-shadow-md">Join a network of passionate wellness advocates</p>
             </div>
           </div>
           
@@ -247,7 +247,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h4 className="text-xl font-bold text-nature-green mb-4">NatureVital</h4>
+              <h4 className="text-xl font-bold text-nature-green mb-4">Herbal Wellness Clinic</h4>
               <p className="text-gray-300 text-sm mb-4">
                 Your trusted source for premium natural health products and wellness solutions.
               </p>

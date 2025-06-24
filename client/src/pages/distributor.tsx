@@ -74,7 +74,7 @@ export default function Distributor() {
           <div className="px-4 w-full">
             <div className="max-w-2xl">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 animate-fade-in">
-                Join the <span className="text-warm-cream">NatureVital</span> Family
+                Join the <span className="text-warm-cream">Herbal Wellness Clinic</span> Family
               </h1>
               <p className="text-white/90 text-lg mb-6 animate-fade-in">
                 Transform lives through natural wellness while building your own thriving business.
@@ -89,7 +89,7 @@ export default function Distributor() {
           {/* Benefits Section */}
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">
-              Why Partner With NatureVital?
+              Why Partner With Herbal Wellness Clinic?
             </h2>
             
             <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -243,7 +243,7 @@ export default function Distributor() {
                     Application Submitted Successfully!
                   </h2>
                   <p className="text-gray-600 mb-6">
-                    Thank you for your interest in becoming a NatureVital partner. Our team will review your application and contact you within 24 hours.
+                    Thank you for your interest in becoming a Herbal Wellness Clinic partner. Our team will review your application and contact you within 24 hours.
                   </p>
                   <div className="bg-nature-green/10 rounded-lg p-4">
                     <p className="text-sm text-nature-green font-medium">

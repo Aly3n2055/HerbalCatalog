@@ -31,11 +31,11 @@ export default function Header() {
               </Button>
               <Link href="/">
                 <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-nature-green cursor-pointer hover:text-forest-green transition-colors">
-                  NatureVital
+                  Herbal Wellness Clinic
                 </h1>
               </Link>
             </div>
-            
+
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
               <Link
@@ -63,7 +63,7 @@ export default function Header() {
                 Account
               </Link>
             </nav>
-            
+
             <div className="flex items-center space-x-1 sm:space-x-2">
               <Button
                 variant="ghost"
@@ -97,7 +97,7 @@ export default function Header() {
             </div>
           </div>
         </div>
-        
+
         {/* Search Bar */}
         {isSearchOpen && (
           <div className="border-t bg-white px-4 sm:px-6 py-3 sm:py-4 animate-in slide-in-from-top-2 duration-200">
