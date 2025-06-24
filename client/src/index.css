@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(45, 29%, 97%);
+  --foreground: hsl(25, 25%, 15%);
+  --muted: hsl(45, 15%, 92%);
+  --muted-foreground: hsl(25, 5%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(25, 25%, 15%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(25, 25%, 15%);
+  --border: hsl(25, 15%, 85%);
+  --input: hsl(25, 15%, 85%);
+  --primary: hsl(142, 71%, 45%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(45, 15%, 92%);
+  --secondary-foreground: hsl(25, 25%, 15%);
+  --accent: hsl(45, 15%, 92%);
+  --accent-foreground: hsl(25, 25%, 15%);
+  --destructive: hsl(0, 62%, 50%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(142, 71%, 45%);
+  --radius: 0.5rem;
+  
+  /* NatureVital brand colors */
+  --nature-green: hsl(142, 71%, 45%);
+  --forest-green: hsl(142, 71%, 35%);
+  --earth-brown: hsl(25, 75%, 25%);
+  --warm-cream: hsl(45, 75%, 88%);
+  --golden: hsl(45, 85%, 45%);
+  
+  /* Sidebar colors */
+  --sidebar-background: hsl(0, 0%, 98%);
+  --sidebar-foreground: hsl(240, 5.9%, 10%);
+  --sidebar-primary: hsl(142, 71%, 45%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(240, 4.8%, 95.9%);
+  --sidebar-accent-foreground: hsl(240, 5.9%, 10%);
+  --sidebar-border: hsl(220, 13%, 91%);
+  --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
+}
+
+.dark {
+  --background: hsl(25, 15%, 8%);
+  --foreground: hsl(45, 25%, 92%);
+  --muted: hsl(25, 10%, 15%);
+  --muted-foreground: hsl(45, 5%, 60%);
+  --popover: hsl(25, 15%, 8%);
+  --popover-foreground: hsl(45, 25%, 92%);
+  --card: hsl(25, 15%, 8%);
+  --card-foreground: hsl(45, 25%, 92%);
+  --border: hsl(25, 10%, 15%);
+  --input: hsl(25, 10%, 15%);
+  --primary: hsl(142, 71%, 45%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(25, 10%, 15%);
+  --secondary-foreground: hsl(45, 25%, 92%);
+  --accent: hsl(25, 10%, 15%);
+  --accent-foreground: hsl(45, 25%, 92%);
+  --destructive: hsl(0, 62%, 35%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(142, 71%, 45%);
+  
+  /* Sidebar dark mode */
+  --sidebar-background: hsl(240, 5.9%, 10%);
+  --sidebar-foreground: hsl(240, 4.8%, 95.9%);
+  --sidebar-primary: hsl(224.3, 76.3%, 94.1%);
+  --sidebar-primary-foreground: hsl(220.9, 39.3%, 11%);
+  --sidebar-accent: hsl(240, 3.7%, 15.9%);
+  --sidebar-accent-foreground: hsl(240, 4.8%, 95.9%);
+  --sidebar-border: hsl(240, 3.7%, 15.9%);
+  --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom utility classes for NatureVital */
+.text-nature-green {
+  color: var(--nature-green);
+}
+
+.bg-nature-green {
+  background-color: var(--nature-green);
+}
+
+.border-nature-green {
+  border-color: var(--nature-green);
+}
+
+.text-forest-green {
+  color: var(--forest-green);
+}
+
+.bg-forest-green {
+  background-color: var(--forest-green);
+}
+
+.text-earth-brown {
+  color: var(--earth-brown);
+}
+
+.bg-earth-brown {
+  background-color: var(--earth-brown);
+}
+
+.text-warm-cream {
+  color: var(--warm-cream);
+}
+
+.bg-warm-cream {
+  background-color: var(--warm-cream);
+}
+
+.text-golden {
+  color: var(--golden);
+}
+
+.bg-golden {
+  background-color: var(--golden);
+}
+
+/* Touch feedback */
+.touch-feedback:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Hide scrollbar */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Skeleton loading animation */
+.skeleton {
+  background: linear-gradient(90deg, hsl(0, 0%, 94%) 25%, transparent 37%, hsl(0, 0%, 94%) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+/* PWA Install button styles */
+.install-prompt {
+  background: linear-gradient(135deg, var(--nature-green) 0%, var(--forest-green) 100%);
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Ensure 48x48px minimum touch targets */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* PWA optimizations */
+@media (display-mode: standalone) {
+  body {
+    /* Remove any browser UI artifacts in standalone mode */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
