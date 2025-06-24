@@ -17,7 +17,8 @@ import { Request, Response } from "express";
 
 /* PayPal Controllers Setup */
 
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID || "AXG05_N7nvzs1SUyDU8GqeXiuJpwtsWKkNdNd8cstRj4bdLOcgdb1leOIt_PvlqsR4HJhaJYKO6Yeb5z";
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || "EM_qOU_mN4Qs7zoD1jAQ822UamP2jFBXU5H_7vM3cKJT69ovXOZV41V30CsIc_2NEVe_y01dXTjUa3u9";
 
 if (!PAYPAL_CLIENT_ID) {
   throw new Error("Missing PAYPAL_CLIENT_ID");
