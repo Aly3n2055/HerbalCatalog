@@ -1,110 +1,79 @@
-const CACHE_NAME = 'naturevital-v1';
-const STATIC_CACHE = 'naturevital-static-v1';
-const DYNAMIC_CACHE = 'naturevital-dynamic-v1';
-
-// Assets to cache on install
-const STATIC_ASSETS = [
+// Enhanced service worker for PWA with better error handling
+const CACHE_NAME = 'herbal-wellness-clinic-v1';
+const urlsToCache = [
   '/',
-  '/products',
-  '/distributor',
-  '/account',
-  '/offline.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/src/index.css'
 ];
 
-// Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
-  
   event.waitUntil(
-    caches.open(STATIC_CACHE)
+    caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
+        console.log('Cache opened successfully');
+        return cache.addAll(urlsToCache);
       })
-      .then(() => {
-        return self.skipWaiting();
+      .catch((error) => {
+        console.error('Cache failed to open:', error);
       })
   );
+  self.skipWaiting();
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...');
-  
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              console.log('Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      })
-      .then(() => {
-        return self.clients.claim();
-      })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
+  self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Skip non-GET requests
-  if (request.method !== 'GET') {
-    return;
-  }
-
-  // Skip API requests and external resources
-  if (url.origin !== location.origin || url.pathname.startsWith('/api/')) {
+  // Only cache GET requests
+  if (event.request.method !== 'GET') {
     return;
   }
 
   event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log('Serving from cache:', request.url);
-          return cachedResponse;
+    caches.match(event.request)
+      .then((response) => {
+        if (response) {
+          return response;
         }
 
-        // Clone the request because it's a stream
-        const fetchRequest = request.clone();
-
-        return fetch(fetchRequest)
+        return fetch(event.request)
           .then((response) => {
             // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response because it's a stream
+            // Clone the response
             const responseToCache = response.clone();
 
-            caches.open(DYNAMIC_CACHE)
+            caches.open(CACHE_NAME)
               .then((cache) => {
-                console.log('Caching new resource:', request.url);
-                cache.put(request, responseToCache);
+                cache.put(event.request, responseToCache);
+              })
+              .catch((error) => {
+                console.error('Failed to cache response:', error);
               });
 
             return response;
           })
-          .catch(() => {
-            // If both cache and network fail, show offline page
-            if (request.destination === 'document') {
-              return caches.match('/offline.html');
-            }
-            
-            // For other resources, return a generic offline response
-            return new Response('Offline content not available', {
-              status: 503,
-              statusText: 'Service Unavailable'
-            });
+          .catch((error) => {
+            console.error('Fetch failed:', error);
+            throw error;
           });
       })
   );
@@ -113,11 +82,11 @@ self.addEventListener('fetch', (event) => {
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
   console.log('Background sync triggered:', event.tag);
-  
+
   if (event.tag === 'cart-sync') {
     event.waitUntil(syncCartData());
   }
-  
+
   if (event.tag === 'order-sync') {
     event.waitUntil(syncOrderData());
   }
@@ -126,7 +95,7 @@ self.addEventListener('sync', (event) => {
 // Push notification handler
 self.addEventListener('push', (event) => {
   console.log('Push message received');
-  
+
   const options = {
     body: event.data ? event.data.text() : 'New update available!',
     icon: '/icon-192.png',
@@ -158,7 +127,7 @@ self.addEventListener('push', (event) => {
 // Notification click handler
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification clicked:', event.action);
-  
+
   event.notification.close();
 
   if (event.action === 'explore') {
@@ -173,7 +142,7 @@ async function syncCartData() {
   try {
     // Get pending cart data from IndexedDB
     const pendingData = await getPendingCartData();
-    
+
     if (pendingData.length > 0) {
       // Sync with server
       await fetch('/api/cart/sync', {
@@ -183,7 +152,7 @@ async function syncCartData() {
         },
         body: JSON.stringify(pendingData)
       });
-      
+
       // Clear pending data on success
       await clearPendingCartData();
       console.log('Cart data synced successfully');
@@ -198,7 +167,7 @@ async function syncOrderData() {
   try {
     // Get pending order data from IndexedDB
     const pendingOrders = await getPendingOrderData();
-    
+
     if (pendingOrders.length > 0) {
       // Sync with server
       await fetch('/api/orders/sync', {
@@ -208,7 +177,7 @@ async function syncOrderData() {
         },
         body: JSON.stringify(pendingOrders)
       });
-      
+
       // Clear pending data on success
       await clearPendingOrderData();
       console.log('Order data synced successfully');
@@ -241,11 +210,11 @@ async function clearPendingOrderData() {
 // Message handler for communication with main thread
 self.addEventListener('message', (event) => {
   console.log('Service Worker received message:', event.data);
-  
+
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-  
+
   if (event.data && event.data.type === 'GET_VERSION') {
     event.ports[0].postMessage({ version: CACHE_NAME });
   }

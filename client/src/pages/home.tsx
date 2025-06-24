@@ -69,7 +69,7 @@ export default function Home() {
       {/* Categories Section */}
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Shop by Category</h3>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Shop by Category</h2>
           
           {categoriesLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
@@ -91,7 +91,7 @@ export default function Home() {
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Featured Products</h3>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Featured Products</h2>
             <Link href="/products">
               <Button variant="ghost" className="text-nature-green font-medium hover:bg-nature-green/10 rounded-xl px-4 py-2 transition-colors">
                 View All
@@ -122,39 +122,39 @@ export default function Home() {
       </section>
 
       {/* Distributor CTA Section */}
-      <section className="py-12 px-4 bg-gradient-to-r from-forest-green to-nature-green text-white">
+      <section className="py-12 px-4 bg-gradient-to-r from-forest-green to-nature-green">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">Join Our Wellness Community</h3>
-          <p className="text-lg text-white mb-8 font-semibold drop-shadow-md">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white drop-shadow-lg">Join Our Wellness Community</h2>
+          <p className="text-lg text-white mb-8 font-medium drop-shadow-md leading-relaxed">
             Become a Herbal Wellness Clinic partner and share the power of natural wellness while building your own business.
           </p>
           
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="h-6 w-6 text-white" />
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
+              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-6 w-6 text-white drop-shadow-md" />
               </div>
-              <h4 className="font-bold mb-2 text-white text-lg drop-shadow-md">Competitive Commissions</h4>
-              <p className="text-sm text-white font-semibold drop-shadow-md">Earn up to 30% on personal sales and team bonuses</p>
+              <h4 className="font-bold mb-3 text-white text-lg drop-shadow-lg">Competitive Commissions</h4>
+              <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Earn up to 30% on personal sales and team bonuses</p>
             </div>
-            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="h-6 w-6 text-white" />
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
+              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="h-6 w-6 text-white drop-shadow-md" />
               </div>
-              <h4 className="font-bold mb-2 text-white text-lg drop-shadow-md">Comprehensive Training</h4>
-              <p className="text-sm text-white font-semibold drop-shadow-md">Access to product knowledge and business training</p>
+              <h4 className="font-bold mb-3 text-white text-lg drop-shadow-lg">Comprehensive Training</h4>
+              <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Access to product knowledge and business training</p>
             </div>
-            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-6 w-6 text-white" />
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
+              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-6 w-6 text-white drop-shadow-md" />
               </div>
-              <h4 className="font-bold mb-2 text-white text-lg drop-shadow-md">Supportive Community</h4>
-              <p className="text-sm text-white font-semibold drop-shadow-md">Join a network of passionate wellness advocates</p>
+              <h4 className="font-bold mb-3 text-white text-lg drop-shadow-lg">Supportive Community</h4>
+              <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Join a network of passionate wellness advocates</p>
             </div>
           </div>
           
           <Link href="/distributor">
-            <Button className="bg-white text-forest-green px-8 py-3 hover:bg-gray-100 transition-colors touch-feedback font-semibold">
+            <Button className="bg-white text-forest-green px-8 py-4 hover:bg-gray-100 transition-all duration-300 touch-feedback font-semibold rounded-xl shadow-lg hover:shadow-xl">
               Learn More About Partnership
             </Button>
           </Link>
@@ -164,7 +164,7 @@ export default function Home() {
       {/* Testimonials */}
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-2xl font-bold text-gray-800 text-center mb-8">What Our Customers Say</h3>
+          <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">What Our Customers Say</h2>
           
           <div className="grid md:grid-cols-3 gap-6">
             <Card>

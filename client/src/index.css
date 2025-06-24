@@ -113,17 +113,26 @@
     background-color: hsl(var(--golden));
   }
 
-  /* Professional text variants */
+  /* Professional text variants with improved contrast */
   .text-primary-dark {
     color: hsl(222.2 84% 8%);
   }
 
   .text-secondary-dark {
-    color: hsl(215.4 16.3% 25%);
+    color: hsl(215.4 16.3% 20%);
   }
 
   .text-muted-strong {
-    color: hsl(215.4 16.3% 35%);
+    color: hsl(215.4 16.3% 30%);
+  }
+
+  /* High contrast text utilities */
+  .text-high-contrast {
+    color: hsl(0 0% 0%);
+  }
+
+  .text-high-contrast-muted {
+    color: hsl(0 0% 20%);
   }
 
   /* Hide scrollbars but keep functionality */
@@ -372,6 +381,32 @@
   .text-nature-green {
     color: #006400;
   }
+
+  /* Enhanced focus indicators for high contrast */
+  button:focus,
+  input:focus,
+  select:focus,
+  textarea:focus,
+  a:focus {
+    outline: 3px solid #0066cc !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Better focus indicators for all users */
+*:focus-visible {
+  outline: 2px solid hsl(var(--nature-green));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default focus outline and use our custom one */
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Reduced motion support */
