@@ -5,25 +5,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 99%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
+    --card: 0 0% 97%;
+    --card-foreground: 222.2 84% 8%;
+    --popover: 0 0% 98%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
+    --primary: 142 69% 35%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 210 40% 94%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 92%;
+    --muted-foreground: 215.4 16.3% 35%;
+    --accent: 142 30% 92%;
+    --accent-foreground: 142 69% 25%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 85%;
+    --input: 214.3 31.8% 88%;
+    --ring: 142 69% 35%;
     --radius: 0.75rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -32,11 +32,11 @@
     --chart-5: 27 87% 67%;
 
     /* Custom NatureVital Colors */
-    --nature-green: 142 69% 38%;
-    --forest-green: 142 69% 28%;
-    --warm-cream: 43 100% 90%;
-    --golden: 38 92% 50%;
-    --sage-green: 156 26% 53%;
+    --nature-green: 142 69% 35%;
+    --forest-green: 142 69% 25%;
+    --warm-cream: 43 60% 85%;
+    --golden: 38 85% 45%;
+    --sage-green: 156 26% 45%;
   }
 
   .dark {
@@ -80,7 +80,7 @@
 }
 
 @layer components {
-  /* Custom color classes */
+  /* Custom color classes with improved contrast */
   .text-nature-green {
     color: hsl(var(--nature-green));
   }
@@ -98,7 +98,7 @@
   }
   
   .text-warm-cream {
-    color: hsl(var(--warm-cream));
+    color: hsl(43 60% 25%);
   }
   
   .bg-warm-cream {
@@ -111,6 +111,19 @@
   
   .bg-golden {
     background-color: hsl(var(--golden));
+  }
+
+  /* Professional text variants */
+  .text-primary-dark {
+    color: hsl(222.2 84% 8%);
+  }
+
+  .text-secondary-dark {
+    color: hsl(215.4 16.3% 25%);
+  }
+
+  .text-muted-strong {
+    color: hsl(215.4 16.3% 35%);
   }
 
   /* Hide scrollbars but keep functionality */
@@ -155,17 +168,31 @@
 
   /* Custom button hover states */
   .btn-nature {
-    @apply bg-nature-green text-white hover:bg-forest-green active:scale-95 transition-all duration-200 rounded-xl font-semibold shadow-md hover:shadow-lg;
+    @apply bg-nature-green text-white hover:bg-forest-green active:scale-95 transition-all duration-200 rounded-xl font-semibold shadow-md hover:shadow-lg border border-nature-green/20;
   }
 
   /* Form input improvements */
   .input-enhanced {
-    @apply border-gray-200 rounded-xl focus:ring-2 focus:ring-nature-green focus:border-transparent transition-all duration-200;
+    @apply border-gray-300 bg-white rounded-xl focus:ring-2 focus:ring-nature-green focus:border-transparent transition-all duration-200 text-gray-900 placeholder:text-gray-500;
   }
 
   /* Card hover effects */
   .card-hover {
-    @apply hover:shadow-lg hover:shadow-gray-200/50 transition-all duration-300 active:scale-95;
+    @apply hover:shadow-lg hover:shadow-gray-300/30 transition-all duration-300 active:scale-95 border border-gray-200/60;
+  }
+
+  /* Professional card styling */
+  .card-professional {
+    @apply bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  /* Enhanced text readability */
+  .text-readable {
+    @apply text-gray-800 leading-relaxed;
+  }
+
+  .text-readable-muted {
+    @apply text-gray-600 leading-relaxed;
   }
 }
 

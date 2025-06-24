@@ -189,7 +189,7 @@ export default function Home() {
                     <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4">
+                <p className="text-readable-muted mb-4">
                   "Fast shipping, quality products, and excellent customer service. NatureVital has become my go-to for all natural supplements."
                 </p>
                 <div className="flex items-center space-x-3">
@@ -213,7 +213,7 @@ export default function Home() {
                     <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4">
+                <p className="text-readable-muted mb-4">
                   "Being a distributor has allowed me to share products I truly believe in while building a meaningful income stream."
                 </p>
                 <div className="flex items-center space-x-3">

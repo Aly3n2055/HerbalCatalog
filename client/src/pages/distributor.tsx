@@ -111,7 +111,7 @@ export default function Distributor() {
                     <BookOpen className="h-8 w-8 text-nature-green" />
                   </div>
                   <h3 className="font-semibold text-lg mb-2">Comprehensive Training</h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-readable-muted text-sm">
                     Access world-class product knowledge, sales training, and business development resources.
                   </p>
                 </CardContent>
@@ -123,7 +123,7 @@ export default function Distributor() {
                     <Users className="h-8 w-8 text-nature-green" />
                   </div>
                   <h3 className="font-semibold text-lg mb-2">Supportive Community</h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-readable-muted text-sm">
                     Join a network of passionate wellness advocates dedicated to helping each other succeed.
                   </p>
                 </CardContent>
@@ -160,7 +160,7 @@ export default function Distributor() {
                   <div className="text-center p-4 bg-gradient-to-b from-yellow-400/5 to-yellow-400/10 rounded-lg">
                     <Badge className="bg-yellow-500 text-white mb-2">Gold</Badge>
                     <div className="text-2xl font-bold text-yellow-600 mb-1">35%</div>
-                    <p className="text-sm text-gray-600">+ Elite Benefits</p>
+                    <p className="text-sm text-readable-muted">+ Elite Benefits</p>
                   </div>
                 </div>
               </CardContent>
