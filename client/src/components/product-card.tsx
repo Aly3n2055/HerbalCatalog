@@ -49,27 +49,32 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
 
   return (
     <Link href={`/product/${product.id}`}>
-      <Card className={`hover:shadow-md transition-all cursor-pointer touch-feedback ${className}`}>
-        <CardContent className="p-4">
-          <div className="relative">
+      <Card className={`group hover:shadow-lg hover:shadow-gray-200/50 transition-all duration-300 cursor-pointer active:scale-95 ${className}`}>
+        <CardContent className="p-3 sm:p-4">
+          <div className="relative overflow-hidden rounded-xl">
             <img
               src={product.imageUrl}
               alt={product.name}
-              className="w-full h-48 object-cover rounded-lg mb-3"
+              className="w-full h-40 sm:h-48 object-cover mb-3 group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
             {product.featured && (
-              <Badge className="absolute top-2 left-2 bg-golden text-white">
+              <Badge className="absolute top-2 left-2 bg-gradient-to-r from-golden to-yellow-500 text-white shadow-md">
                 Featured
+              </Badge>
+            )}
+            {!product.inStock && (
+              <Badge className="absolute top-2 right-2 bg-gray-500 text-white">
+                Out of Stock
               </Badge>
             )}
           </div>
           
-          <div className="space-y-2">
-            <h4 className="font-medium text-gray-800 line-clamp-2">
+          <div className="space-y-2 sm:space-y-3">
+            <h4 className="font-semibold text-gray-800 line-clamp-2 text-sm sm:text-base group-hover:text-nature-green transition-colors">
               {product.name}
             </h4>
-            <p className="text-sm text-gray-600 line-clamp-2">
+            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
               {product.shortDescription}
             </p>
             
@@ -77,22 +82,23 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
               <div className="flex">
                 {renderStars(parseFloat(product.rating || "0"))}
               </div>
-              <span className="text-sm text-gray-500">
+              <span className="text-xs sm:text-sm text-gray-500">
                 ({product.reviewCount})
               </span>
             </div>
             
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-bold text-nature-green">
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-lg sm:text-xl font-bold text-nature-green">
                 ${parseFloat(product.price).toFixed(2)}
               </span>
               <Button
                 size="sm"
-                className="bg-nature-green hover:bg-forest-green text-white touch-feedback"
+                className="bg-nature-green hover:bg-forest-green text-white rounded-xl px-3 py-2 text-xs sm:text-sm active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg"
                 onClick={handleAddToCart}
+                disabled={!product.inStock}
               >
-                <ShoppingCart className="h-4 w-4 mr-1" />
-                Add to Cart
+                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                {product.inStock ? "Add to Cart" : "Sold Out"}
               </Button>
             </div>
           </div>

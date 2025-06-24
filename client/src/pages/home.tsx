@@ -28,33 +28,33 @@ export default function Home() {
       <CartDrawer />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent z-10"></div>
+      <section className="relative overflow-hidden h-[70vh] sm:h-[80vh] lg:h-96">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent z-10"></div>
         <img
           src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080"
           alt="Wellness lifestyle with natural herbs"
-          className="w-full h-96 object-cover"
+          className="w-full h-full object-cover"
         />
         
         <div className="absolute inset-0 z-20 flex items-center">
-          <div className="px-4 w-full">
-            <div className="max-w-lg">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 animate-fade-in">
+          <div className="px-4 sm:px-6 lg:px-8 w-full">
+            <div className="max-w-2xl">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                 Pure. Natural. <span className="text-warm-cream">Powerful.</span>
               </h2>
-              <p className="text-white/90 text-lg mb-6 animate-fade-in">
+              <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 leading-relaxed max-w-lg">
                 Discover premium herbal supplements crafted from nature's finest ingredients for optimal wellness.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 animate-fade-in">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link href="/products">
-                  <Button className="bg-nature-green text-white px-8 py-3 hover:bg-forest-green transition-colors touch-feedback">
+                  <Button className="bg-nature-green text-white px-6 sm:px-8 py-3 sm:py-4 hover:bg-forest-green transition-all duration-300 rounded-xl font-semibold text-base active:scale-95 shadow-lg hover:shadow-xl w-full sm:w-auto">
                     Shop Now
                   </Button>
                 </Link>
                 <Link href="/distributor">
                   <Button
                     variant="outline"
-                    className="bg-white/10 backdrop-blur-sm text-white px-8 py-3 border-white/20 hover:bg-white/20 touch-feedback"
+                    className="bg-white/10 backdrop-blur-sm text-white px-6 sm:px-8 py-3 sm:py-4 border-white/20 hover:bg-white/20 transition-all duration-300 rounded-xl font-semibold text-base active:scale-95 w-full sm:w-auto"
                   >
                     Learn More
                   </Button>
@@ -66,18 +66,18 @@ export default function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-8 px-4">
+      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Shop by Category</h3>
+          <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Shop by Category</h3>
           
           {categoriesLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-xl h-32 skeleton"></div>
+                <div key={i} className="bg-gray-200 rounded-xl h-28 sm:h-32 animate-pulse"></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {categories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
@@ -87,30 +87,30 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-8 px-4 bg-white">
+      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-800">Featured Products</h3>
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Featured Products</h3>
             <Link href="/products">
-              <Button variant="ghost" className="text-nature-green font-medium touch-feedback">
+              <Button variant="ghost" className="text-nature-green font-medium hover:bg-nature-green/10 rounded-xl px-4 py-2 transition-colors">
                 View All
               </Button>
             </Link>
           </div>
           
           {productsLoading ? (
-            <div className="flex space-x-4 overflow-x-auto hide-scrollbar pb-4">
+            <div className="flex space-x-3 sm:space-x-4 overflow-x-auto hide-scrollbar pb-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-xl min-w-64 h-80 skeleton"></div>
+                <div key={i} className="bg-gray-200 rounded-xl min-w-60 sm:min-w-64 h-72 sm:h-80 animate-pulse flex-shrink-0"></div>
               ))}
             </div>
           ) : (
-            <div className="flex space-x-4 overflow-x-auto hide-scrollbar pb-4">
+            <div className="flex space-x-3 sm:space-x-4 overflow-x-auto hide-scrollbar pb-4">
               {featuredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
-                  className="min-w-64 flex-shrink-0"
+                  className="min-w-60 sm:min-w-64 flex-shrink-0"
                 />
               ))}
             </div>

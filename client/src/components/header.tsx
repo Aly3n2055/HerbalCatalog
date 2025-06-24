@@ -18,19 +18,19 @@ export default function Header() {
   return (
     <>
       <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
-        <div className="px-4 py-3">
+        <div className="px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden touch-feedback p-2"
+                className="lg:hidden p-2 sm:p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
-                <Menu className="h-6 w-6 text-gray-600" />
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
               </Button>
               <Link href="/">
-                <h1 className="text-xl font-bold text-nature-green cursor-pointer">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-nature-green cursor-pointer hover:text-forest-green transition-colors">
                   NatureVital
                 </h1>
               </Link>
@@ -64,34 +64,34 @@ export default function Header() {
               </Link>
             </nav>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="touch-feedback p-2"
+                className="p-2 sm:p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
               >
-                <Search className="h-6 w-6 text-gray-600" />
+                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="touch-feedback p-2 relative"
+                className="p-2 sm:p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors relative"
                 onClick={toggleCart}
               >
-                <ShoppingCart className="h-6 w-6 text-gray-600" />
+                <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
                 {getTotalItems() > 0 && (
                   <Badge
                     variant="default"
-                    className="absolute -top-1 -right-1 bg-nature-green text-white text-xs rounded-full h-5 w-5 flex items-center justify-center p-0"
+                    className="absolute -top-1 -right-1 bg-nature-green text-white text-xs rounded-full h-5 w-5 flex items-center justify-center p-0 animate-pulse"
                   >
                     {getTotalItems()}
                   </Badge>
                 )}
               </Button>
               <Link href="/account">
-                <Button variant="ghost" size="sm" className="touch-feedback p-2">
-                  <User className="h-6 w-6 text-gray-600" />
+                <Button variant="ghost" size="sm" className="p-2 sm:p-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors">
+                  <User className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
                 </Button>
               </Link>
             </div>
@@ -100,15 +100,15 @@ export default function Header() {
         
         {/* Search Bar */}
         {isSearchOpen && (
-          <div className="border-t bg-white px-4 py-3 animate-slide-up">
-            <div className="relative">
+          <div className="border-t bg-white px-4 sm:px-6 py-3 sm:py-4 animate-in slide-in-from-top-2 duration-200">
+            <div className="relative max-w-md mx-auto">
               <Input
                 type="text"
                 placeholder="Search natural products..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-nature-green focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nature-green focus:border-transparent shadow-sm"
                 autoFocus
               />
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
           </div>
         )}
