@@ -127,29 +127,33 @@
     <!-- Service Worker Registration -->
     <script>
       // Register service worker for PWA functionality
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && 'https:' === location.protocol) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
             .then((registration) => {
-              console.log('SW registered: ', registration);
+              console.log('SW registered successfully: ', registration.scope);
 
               // Check for updates
               registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content available, prompt user to refresh
-                    if (confirm('New version available! Refresh to update?')) {
-                      window.location.reload();
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // New content available, prompt user to refresh
+                      if (confirm('New version available! Refresh to update?')) {
+                        window.location.reload();
+                      }
                     }
-                  }
-                });
+                  });
+                }
               });
             })
             .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError);
+              console.warn('SW registration failed (this is normal in development): ', registrationError.message);
             });
         });
+      } else {
+        console.log('Service worker not supported or not on HTTPS');
       }
 
       // PWA install prompt handling
@@ -194,16 +198,26 @@
       // Performance monitoring
       window.addEventListener('load', () => {
         setTimeout(() => {
-          const perfData = performance.getEntriesByType('navigation')[0];
-          console.log('Page load time:', perfData.loadEventEnd - perfData.fetchStart, 'ms');
+          try {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            const loadTime = perfData.loadEventEnd - perfData.fetchStart;
+            console.log('Page load time:', loadTime, 'ms');
+            
+            // Warn if page load is slow
+            if (loadTime > 10000) {
+              console.warn('Slow page load detected. Consider optimizing resources.');
+            }
 
-          // Report Core Web Vitals
-          if ('web-vitals' in window) {
-            getCLS(console.log);
-            getFID(console.log);
-            getLCP(console.log);
+            // Report Core Web Vitals if available
+            if (typeof getCLS !== 'undefined') {
+              getCLS(console.log);
+              getFID(console.log);
+              getLCP(console.log);
+            }
+          } catch (error) {
+            console.warn('Performance monitoring failed:', error.message);
           }
-        }, 0);
+        }, 100);
       });
     </script>
 

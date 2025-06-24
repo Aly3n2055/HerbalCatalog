@@ -66,7 +66,7 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -84,31 +84,31 @@
   .text-nature-green {
     color: hsl(var(--nature-green));
   }
-  
+
   .bg-nature-green {
     background-color: hsl(var(--nature-green));
   }
-  
+
   .text-forest-green {
     color: hsl(var(--forest-green));
   }
-  
+
   .bg-forest-green {
     background-color: hsl(var(--forest-green));
   }
-  
+
   .text-warm-cream {
     color: hsl(43 60% 25%);
   }
-  
+
   .bg-warm-cream {
     background-color: hsl(var(--warm-cream));
   }
-  
+
   .text-golden {
     color: hsl(var(--golden));
   }
-  
+
   .bg-golden {
     background-color: hsl(var(--golden));
   }
@@ -131,7 +131,7 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -143,7 +143,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -368,7 +368,7 @@
   .bg-nature-green {
     background-color: #006400;
   }
-  
+
   .text-nature-green {
     color: #006400;
   }
@@ -391,9 +391,38 @@
   .no-print {
     display: none !important;
   }
-  
+
   body {
     background: white !important;
     color: black !important;
   }
+}
+
+/* Performance optimizations */
+.touch-feedback {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve rendering performance */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-scroll {
+  will-change: scroll-position;
+}
+
+/* Optimize image loading */
+img {
+  content-visibility: auto;
+}
+
+/* Reduce layout shifts */
+.aspect-ratio-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-ratio-video {
+  aspect-ratio: 16 / 9;
 }

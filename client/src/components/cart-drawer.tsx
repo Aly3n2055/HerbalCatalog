@@ -27,7 +27,7 @@ export default function CartDrawer() {
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
-      <SheetContent side="right" className="w-full max-w-sm sm:max-w-md bg-white p-0">
+      <SheetContent side="right" className="w-full max-w-sm sm:max-w-md bg-white p-0" aria-describedby="cart-description">
         <div className="flex flex-col h-full">
           <SheetHeader className="p-4 sm:p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
@@ -36,8 +36,11 @@ export default function CartDrawer() {
                 {items.length} {items.length === 1 ? 'item' : 'items'}
               </Badge>
             </div>
+             <p id="cart-description" className="sr-only">
+            Review and manage items in your shopping cart. You can update quantities or remove items before checkout.
+          </p>
           </SheetHeader>
-          
+
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             {items.length === 0 ? (
               <div className="text-center py-12">
@@ -104,7 +107,7 @@ export default function CartDrawer() {
               </div>
             )}
           </div>
-          
+
           {items.length > 0 && (
             <div className="border-t border-gray-100 p-4 sm:p-6 bg-gray-50/50">
               <div className="space-y-4">
