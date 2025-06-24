@@ -5,6 +5,11 @@ import {
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
   type DistributorLead, type InsertDistributorLead
 } from "@shared/schema";
+import { db } from "./db";
+
+if (!db) {
+  throw new Error('Database connection not initialized');
+}
 
 export interface IStorage {
   // Users
@@ -84,7 +89,7 @@ export class MemStorage implements IStorage {
       { id: 3, name: "Essential Oils", slug: "essential-oils", description: "Pure essential oils", imageUrl: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", productCount: 15 },
       { id: 4, name: "Skincare", slug: "skincare", description: "Natural skincare products", imageUrl: "https://images.unsplash.com/photo-1556228720-195a672e8a03?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300", productCount: 6 }
     ];
-    
+
     categoriesData.forEach(cat => {
       this.categories.set(cat.id, { ...cat });
       this.currentCategoryId = Math.max(this.currentCategoryId, cat.id + 1);
@@ -227,7 +232,7 @@ export class MemStorage implements IStorage {
   async updateUserStripeInfo(id: number, customerId: string, subscriptionId?: string): Promise<User> {
     const user = this.users.get(id);
     if (!user) throw new Error("User not found");
-    
+
     const updated = { 
       ...user, 
       stripeCustomerId: customerId,
@@ -310,7 +315,7 @@ export class MemStorage implements IStorage {
   async updateCartItem(id: number, quantity: number): Promise<CartItem> {
     const item = this.cartItems.get(id);
     if (!item) throw new Error("Cart item not found");
-    
+
     const updated = { ...item, quantity };
     this.cartItems.set(id, updated);
     return updated;
@@ -391,7 +396,7 @@ export class MemStorage implements IStorage {
  * Provides full CRUD operations with proper error handling and logging.
  */
 export class DatabaseStorage implements IStorage {
-  
+
   // User Operations
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[DB] Getting user ${id}`);
@@ -440,7 +445,7 @@ export class DatabaseStorage implements IStorage {
     console.log(`[DB] Getting products by category: ${categorySlug}`);
     const category = await this.getCategory(categorySlug);
     if (!category) return [];
-    
+
     return await db
       .select()
       .from(products)
@@ -512,7 +517,7 @@ export class DatabaseStorage implements IStorage {
 
   async addToCart(item: InsertCartItem): Promise<CartItem> {
     console.log(`[DB] Adding to cart: user ${item.userId}, product ${item.productId}`);
-    
+
     // Check if item already exists
     const [existingItem] = await db
       .select()
@@ -566,7 +571,7 @@ export class DatabaseStorage implements IStorage {
   // Order Operations
   async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     console.log(`[DB] Creating order for user ${order.userId}`);
-    
+
     const [newOrder] = await db
       .insert(orders)
       .values({
