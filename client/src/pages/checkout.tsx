@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { useState } from "react";
 import Header from "@/components/header";
 import BottomNavigation from "@/components/bottom-navigation";
 import { Button } from "@/components/ui/button";
@@ -8,110 +6,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Link, useLocation } from "wouter";
-
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+import { Link } from "wouter";
+import PayPalButton from "@/components/PayPalButton";
 
 const CheckoutForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const { toast } = useToast();
-  const { clearCart, getTotalPrice } = useCart();
-  const { user } = useAuth();
-  const [, setLocation] = useLocation();
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!stripe || !elements || !user) {
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/account`,
-        },
-      });
-
-      if (error) {
-        toast({
-          title: "Payment Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        // Payment succeeded
-        clearCart();
-        toast({
-          title: "Payment Successful",
-          description: "Thank you for your purchase!",
-        });
-        setLocation("/account");
-      }
-    } catch (error) {
-      toast({
-        title: "Payment Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  const { getTotalPrice } = useCart();
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
-      <Button
-        type="submit"
-        disabled={!stripe || isProcessing}
-        className="w-full bg-nature-green hover:bg-forest-green"
-      >
-        {isProcessing ? "Processing..." : "Complete Purchase"}
-      </Button>
-    </form>
+    <div className="space-y-6">
+      <div className="p-4 bg-stone-50 rounded-lg">
+        <p className="text-sm text-gray-600 mb-4">
+          You will be redirected to PayPal to complete your payment securely.
+        </p>
+        <PayPalButton 
+          amount={getTotalPrice().toFixed(2)}
+          currency="USD"
+          intent="CAPTURE"
+        />
+      </div>
+    </div>
   );
 };
 
 export default function Checkout() {
   const { items, getTotalPrice, getTotalItems } = useCart();
   const { user } = useAuth();
-  const [clientSecret, setClientSecret] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (items.length === 0) {
-      return;
-    }
-
-    // Create PaymentIntent as soon as the page loads
-    const createPaymentIntent = async () => {
-      try {
-        const response = await apiRequest("POST", "/api/create-payment-intent", {
-          amount: getTotalPrice(),
-        });
-        const data = await response.json();
-        setClientSecret(data.clientSecret);
-      } catch (error) {
-        console.error("Error creating payment intent:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    createPaymentIntent();
-  }, [items, getTotalPrice]);
 
   if (items.length === 0) {
     return (
@@ -161,22 +81,7 @@ export default function Checkout() {
     );
   }
 
-  if (isLoading || !clientSecret) {
-    return (
-      <div className="min-h-screen bg-stone-50">
-        <Header />
-        <div className="px-4 py-6">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-nature-green mx-auto mb-4"></div>
-              <p className="text-gray-700">Preparing checkout...</p>
-            </div>
-          </div>
-        </div>
-        <BottomNavigation />
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -245,9 +150,7 @@ export default function Checkout() {
                   <CardTitle>Payment Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm />
-                  </Elements>
+                  <CheckoutForm />
                 </CardContent>
               </Card>
             </div>

@@ -208,11 +208,17 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const user: User = { 
-      ...insertUser, 
+      ...insertUser,
       id, 
       createdAt: new Date(),
       stripeCustomerId: null,
-      stripeSubscriptionId: null 
+      stripeSubscriptionId: null,
+      role: insertUser.role || "customer",
+      firstName: insertUser.firstName || null,
+      lastName: insertUser.lastName || null,
+      phone: insertUser.phone || null,
+      distributorId: insertUser.distributorId || null,
+      uplineId: insertUser.uplineId || null
     };
     this.users.set(id, user);
     return user;
@@ -283,13 +289,20 @@ export class MemStorage implements IStorage {
 
     if (existingItem) {
       // Update quantity
-      const updated = { ...existingItem, quantity: existingItem.quantity + item.quantity };
+      const updated = { ...existingItem, quantity: existingItem.quantity + (item.quantity || 1) };
       this.cartItems.set(existingItem.id, updated);
       return updated;
     }
 
     const id = this.currentCartItemId++;
-    const cartItem: CartItem = { ...item, id, createdAt: new Date() };
+    const cartItem: CartItem = { 
+      ...item, 
+      id, 
+      createdAt: new Date(),
+      userId: item.userId || null,
+      productId: item.productId || null,
+      quantity: item.quantity || 1
+    };
     this.cartItems.set(id, cartItem);
     return cartItem;
   }
@@ -318,13 +331,25 @@ export class MemStorage implements IStorage {
   // Orders
   async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     const orderId = this.currentOrderId++;
-    const newOrder: Order = { ...order, id: orderId, createdAt: new Date() };
+    const newOrder: Order = { 
+      ...order, 
+      id: orderId, 
+      createdAt: new Date(),
+      status: order.status || "pending",
+      userId: order.userId || null,
+      stripePaymentIntentId: order.stripePaymentIntentId || null
+    };
     this.orders.set(orderId, newOrder);
 
     // Create order items
     items.forEach(item => {
       const orderItemId = this.currentOrderItemId++;
-      const orderItem: OrderItem = { ...item, id: orderItemId, orderId };
+      const orderItem: OrderItem = { 
+        ...item, 
+        id: orderItemId, 
+        orderId: orderId,
+        productId: item.productId || null
+      };
       this.orderItems.set(orderItemId, orderItem);
     });
 
@@ -342,7 +367,14 @@ export class MemStorage implements IStorage {
   // Distributor Leads
   async createDistributorLead(lead: InsertDistributorLead): Promise<DistributorLead> {
     const id = this.currentLeadId++;
-    const newLead: DistributorLead = { ...lead, id, createdAt: new Date() };
+    const newLead: DistributorLead = { 
+      ...lead, 
+      id, 
+      createdAt: new Date(),
+      phone: lead.phone || null,
+      status: lead.status || "new",
+      notes: lead.notes || null
+    };
     this.distributorLeads.set(id, newLead);
     return newLead;
   }
