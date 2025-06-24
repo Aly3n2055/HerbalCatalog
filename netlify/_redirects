@@ -1,0 +1,13 @@
+# Netlify Redirects Configuration for NatureVital
+
+# API routes to serverless functions
+/api/products/*  /.netlify/functions/products/:splat  200
+/api/categories/*  /.netlify/functions/categories/:splat  200
+/api/auth/register  /.netlify/functions/auth-register  200
+/api/auth/login  /.netlify/functions/auth-login  200
+/api/paypal/setup  /.netlify/functions/paypal-setup  200
+/api/paypal/order/*  /.netlify/functions/paypal-order/:splat  200
+/api/distributor-leads  /.netlify/functions/distributor-leads  200
+
+# Client-side routing - serve index.html for all other routes
+/*  /index.html  200

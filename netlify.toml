@@ -1,0 +1,87 @@
+# Netlify Configuration for NatureVital E-commerce Platform
+# This configuration enables full-stack deployment with serverless functions
+
+[build]
+  # Build command for the client application
+  command = "npm run build:netlify"
+  
+  # Directory to publish (contains built client files)
+  publish = "dist/public"
+  
+  # Functions directory for serverless API endpoints
+  functions = "netlify/functions"
+  
+  # Node.js version for build and runtime
+  node_version = "20"
+
+[build.environment]
+  # Build-time environment variables
+  NODE_ENV = "production"
+  VITE_API_BASE_URL = "/.netlify/functions"
+
+# Function configuration
+[functions]
+  # Global function settings
+  node_bundler = "esbuild"
+  external_node_modules = ["@paypal/paypal-server-sdk", "bcrypt"]
+  
+# Redirect rules for client-side routing
+[[redirects]]
+  # API routes go to serverless functions
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  
+[[redirects]]
+  # Client-side routing - all other routes serve index.html
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # CORS headers for API
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    # Cache static assets for 1 year
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    # API response headers
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
+
+# Edge functions for advanced routing (optional)
+# [[edge_functions]]
+#   function = "auth-middleware"
+#   path = "/api/cart/*"
+
+# Environment variable placeholders (set in Netlify UI)
+# Required environment variables:
+# - DATABASE_URL: PostgreSQL connection string
+# - PAYPAL_CLIENT_ID: PayPal API client ID
+# - PAYPAL_CLIENT_SECRET: PayPal API client secret
+# - SESSION_SECRET: Secret for session encryption
+
+# Dev server configuration for local development
+[dev]
+  command = "npm run dev:netlify"
+  port = 3000
+  publish = "dist/public"
+  functions = "netlify/functions"
