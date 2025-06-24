@@ -8,6 +8,7 @@ import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { ProductCardSkeleton, CategoryCardSkeleton, TestimonialCardSkeleton } from "@/components/ui/skeleton";
 import { Star, DollarSign, BookOpen, Users } from "lucide-react";
 import { Link } from "wouter";
 import { Product, Category } from "@shared/schema";
@@ -73,7 +74,7 @@ export default function Home() {
           {categoriesLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-xl h-28 sm:h-32 animate-pulse"></div>
+                <CategoryCardSkeleton key={i} />
               ))}
             </div>
           ) : (
@@ -101,7 +102,9 @@ export default function Home() {
           {productsLoading ? (
             <div className="flex space-x-3 sm:space-x-4 overflow-x-auto hide-scrollbar pb-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-xl min-w-60 sm:min-w-64 h-72 sm:h-80 animate-pulse flex-shrink-0"></div>
+                <div key={i} className="min-w-60 sm:min-w-64 flex-shrink-0">
+                  <ProductCardSkeleton />
+                </div>
               ))}
             </div>
           ) : (

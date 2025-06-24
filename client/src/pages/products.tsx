@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { ProductCardSkeleton, CategoryCardSkeleton } from "@/components/ui/skeleton";
 import { Search, Filter } from "lucide-react";
 import { Product, Category } from "@shared/schema";
 
@@ -70,9 +71,15 @@ export default function Products() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Shop by Category</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                {categories.map((category) => (
-                  <CategoryCard key={category.id} category={category} />
-                ))}
+                {categories.length === 0 ? (
+                  [...Array(4)].map((_, i) => (
+                    <CategoryCardSkeleton key={i} />
+                  ))
+                ) : (
+                  categories.map((category) => (
+                    <CategoryCard key={category.id} category={category} />
+                  ))
+                )}
               </div>
             </section>
           )}
@@ -107,7 +114,7 @@ export default function Products() {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-xl h-80 skeleton"></div>
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : sortedProducts.length === 0 ? (
