@@ -384,4 +384,245 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+/**
+ * Database Storage Implementation using NeonDB
+ * 
+ * Production-ready storage implementation using Drizzle ORM and NeonDB.
+ * Provides full CRUD operations with proper error handling and logging.
+ */
+export class DatabaseStorage implements IStorage {
+  
+  // User Operations
+  async getUser(id: number): Promise<User | undefined> {
+    console.log(`[DB] Getting user ${id}`);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    console.log(`[DB] Getting user by email: ${email}`);
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    console.log(`[DB] Creating user: ${insertUser.email}`);
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        createdAt: new Date(),
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserStripeInfo(id: number, customerId: string, subscriptionId?: string): Promise<User> {
+    console.log(`[DB] Updating user ${id} Stripe info`);
+    const [user] = await db
+      .update(users)
+      .set({ 
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: subscriptionId 
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  // Product Operations
+  async getProducts(): Promise<Product[]> {
+    console.log('[DB] Getting all products');
+    return await db.select().from(products).orderBy(desc(products.featured), products.name);
+  }
+
+  async getProductsByCategory(categorySlug: string): Promise<Product[]> {
+    console.log(`[DB] Getting products by category: ${categorySlug}`);
+    const category = await this.getCategory(categorySlug);
+    if (!category) return [];
+    
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.category, category.id))
+      .orderBy(desc(products.featured), products.name);
+  }
+
+  async getFeaturedProducts(): Promise<Product[]> {
+    console.log('[DB] Getting featured products');
+    return await db
+      .select()
+      .from(products)
+      .where(eq(products.featured, true))
+      .orderBy(products.name);
+  }
+
+  async getProduct(id: number): Promise<Product | undefined> {
+    console.log(`[DB] Getting product ${id}`);
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product || undefined;
+  }
+
+  async searchProducts(query: string): Promise<Product[]> {
+    console.log(`[DB] Searching products: ${query}`);
+    return await db
+      .select()
+      .from(products)
+      .where(
+        or(
+          ilike(products.name, `%${query}%`),
+          ilike(products.description, `%${query}%`),
+          ilike(products.shortDescription, `%${query}%`)
+        )
+      )
+      .orderBy(desc(products.featured), products.name);
+  }
+
+  // Category Operations
+  async getCategories(): Promise<Category[]> {
+    console.log('[DB] Getting all categories');
+    return await db.select().from(categories).orderBy(categories.name);
+  }
+
+  async getCategory(slug: string): Promise<Category | undefined> {
+    console.log(`[DB] Getting category: ${slug}`);
+    const [category] = await db.select().from(categories).where(eq(categories.slug, slug));
+    return category || undefined;
+  }
+
+  // Cart Operations
+  async getCartItems(userId: number): Promise<(CartItem & { product: Product })[]> {
+    console.log(`[DB] Getting cart items for user ${userId}`);
+    const result = await db
+      .select({
+        id: cartItems.id,
+        userId: cartItems.userId,
+        productId: cartItems.productId,
+        quantity: cartItems.quantity,
+        createdAt: cartItems.createdAt,
+        product: products,
+      })
+      .from(cartItems)
+      .innerJoin(products, eq(cartItems.productId, products.id))
+      .where(eq(cartItems.userId, userId))
+      .orderBy(cartItems.createdAt);
+
+    return result;
+  }
+
+  async addToCart(item: InsertCartItem): Promise<CartItem> {
+    console.log(`[DB] Adding to cart: user ${item.userId}, product ${item.productId}`);
+    
+    // Check if item already exists
+    const [existingItem] = await db
+      .select()
+      .from(cartItems)
+      .where(and(
+        eq(cartItems.userId, item.userId),
+        eq(cartItems.productId, item.productId)
+      ));
+
+    if (existingItem) {
+      // Update quantity
+      const [updatedItem] = await db
+        .update(cartItems)
+        .set({ quantity: existingItem.quantity + item.quantity })
+        .where(eq(cartItems.id, existingItem.id))
+        .returning();
+      return updatedItem;
+    } else {
+      // Insert new item
+      const [newItem] = await db
+        .insert(cartItems)
+        .values({
+          ...item,
+          createdAt: new Date(),
+        })
+        .returning();
+      return newItem;
+    }
+  }
+
+  async updateCartItem(id: number, quantity: number): Promise<CartItem> {
+    console.log(`[DB] Updating cart item ${id} quantity: ${quantity}`);
+    const [item] = await db
+      .update(cartItems)
+      .set({ quantity })
+      .where(eq(cartItems.id, id))
+      .returning();
+    return item;
+  }
+
+  async removeFromCart(id: number): Promise<void> {
+    console.log(`[DB] Removing cart item ${id}`);
+    await db.delete(cartItems).where(eq(cartItems.id, id));
+  }
+
+  async clearCart(userId: number): Promise<void> {
+    console.log(`[DB] Clearing cart for user ${userId}`);
+    await db.delete(cartItems).where(eq(cartItems.userId, userId));
+  }
+
+  // Order Operations
+  async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
+    console.log(`[DB] Creating order for user ${order.userId}`);
+    
+    const [newOrder] = await db
+      .insert(orders)
+      .values({
+        ...order,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    // Insert order items
+    for (const item of items) {
+      await db.insert(orderItems).values({
+        ...item,
+        orderId: newOrder.id,
+      });
+    }
+
+    return newOrder;
+  }
+
+  async getOrders(userId: number): Promise<Order[]> {
+    console.log(`[DB] Getting orders for user ${userId}`);
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async getOrder(id: number): Promise<Order | undefined> {
+    console.log(`[DB] Getting order ${id}`);
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order || undefined;
+  }
+
+  // Distributor Lead Operations
+  async createDistributorLead(lead: InsertDistributorLead): Promise<DistributorLead> {
+    console.log(`[DB] Creating distributor lead: ${lead.email}`);
+    const [newLead] = await db
+      .insert(distributorLeads)
+      .values({
+        ...lead,
+        status: 'pending',
+        createdAt: new Date(),
+      })
+      .returning();
+    return newLead;
+  }
+
+  async getDistributorLeads(): Promise<DistributorLead[]> {
+    console.log('[DB] Getting all distributor leads');
+    return await db
+      .select()
+      .from(distributorLeads)
+      .orderBy(desc(distributorLeads.createdAt));
+  }
+}
+
+// Use environment variable to determine storage implementation
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();

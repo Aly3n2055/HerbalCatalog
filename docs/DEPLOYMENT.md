@@ -101,55 +101,57 @@ netlify deploy --prod
 - Excellent performance for React applications
 - Serverless functions with automatic scaling
 - Built-in analytics and monitoring
+- Edge functions for global performance
+
+#### Prerequisites
+- Vercel account
+- NeonDB database (serverless PostgreSQL)
+- PayPal Business account
 
 #### Setup Instructions
 
-**1. Install Vercel CLI**
+**1. Environment Variables**
+Set these in Vercel dashboard → Project settings → Environment variables:
+```env
+DATABASE_URL=postgresql://user:pass@host:port/database
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+SESSION_SECRET=your_session_secret_key
+NODE_ENV=production
+```
+
+**2. Deploy via Git**
 ```bash
+# Connect repository to Vercel
+git remote add vercel your-vercel-git-url
+
+# Deploy
+git push vercel main
+```
+
+**3. Deploy via CLI**
+```bash
+# Install Vercel CLI
 npm install -g vercel
-```
 
-**2. Create vercel.json**
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "dist/public/**/*",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "server/**/*.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/dist/public/$1"
-    }
-  ],
-  "env": {
-    "DATABASE_URL": "@database-url",
-    "PAYPAL_CLIENT_ID": "@paypal-client-id",
-    "PAYPAL_CLIENT_SECRET": "@paypal-client-secret",
-    "SESSION_SECRET": "@session-secret"
-  }
-}
-```
+# Login to Vercel
+vercel login
 
-**3. Deploy**
-```bash
-# Build application
-npm run build
-
-# Deploy to Vercel
+# Build and deploy
+npm run build:vercel
 vercel --prod
 ```
+
+#### Vercel Configuration
+
+**vercel.json** (already configured):
+- Builds static assets and Node.js API
+- Routes API calls to serverless functions
+- Headers for security and CORS
+- Environment variable mapping
+
+**Database Integration:**
+NatureVital is configured to work with NeonDB's serverless PostgreSQL, which is perfect for Vercel's serverless architecture.
 
 ---
 
@@ -258,17 +260,26 @@ doctl apps create --spec app.yaml
 
 ## Database Setup for Production
 
-### Option 1: Neon (Recommended)
+### Option 1: NeonDB (Recommended - Already Configured)
 
 **Features:**
-- Serverless PostgreSQL
-- Automatic scaling
-- Built-in connection pooling
+- Serverless PostgreSQL optimized for modern applications
+- Automatic scaling and connection pooling
+- Branching for development workflows
+- Built-in read replicas
+- Compatible with Vercel and Netlify edge functions
 
 **Setup:**
-1. Create account at neon.tech
-2. Create new project
-3. Copy connection string to `DATABASE_URL`
+1. Database is already provisioned and configured
+2. Connection string is set in `DATABASE_URL`
+3. Database schema is defined in `shared/schema.ts`
+4. Seed data can be populated with `npm run db:seed`
+
+**NeonDB Integration Benefits:**
+- Zero-maintenance serverless architecture
+- Automatic connection pooling for serverless functions
+- Global edge network for low latency
+- Built-in backup and point-in-time recovery
 
 ### Option 2: PlanetScale
 
