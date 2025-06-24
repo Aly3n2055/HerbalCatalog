@@ -8,7 +8,7 @@ import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Star, DollarSign, BookOpen, Users } from "lucide-react";
 import { Link } from "wouter";
 import { Product, Category } from "@shared/schema";
 
@@ -121,31 +121,37 @@ export default function Home() {
       {/* Distributor CTA Section */}
       <section className="py-12 px-4 bg-gradient-to-r from-forest-green to-nature-green text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl md:text-3xl font-bold mb-4">Join Our Wellness Community</h3>
-          <p className="text-lg opacity-90 mb-8">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">Join Our Wellness Community</h3>
+          <p className="text-lg text-white/95 mb-8 font-medium">
             Become a NatureVital partner and share the power of natural wellness while building your own business.
           </p>
           
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-              <div className="text-3xl mb-4">💰</div>
-              <h4 className="font-semibold mb-2">Competitive Commissions</h4>
-              <p className="text-sm opacity-80">Earn up to 30% on personal sales and team bonuses</p>
+            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-6 w-6 text-white" />
+              </div>
+              <h4 className="font-bold mb-2 text-white text-lg">Competitive Commissions</h4>
+              <p className="text-sm text-white/90 font-medium">Earn up to 30% on personal sales and team bonuses</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-              <div className="text-3xl mb-4">🎓</div>
-              <h4 className="font-semibold mb-2">Comprehensive Training</h4>
-              <p className="text-sm opacity-80">Access to product knowledge and business training</p>
+            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <h4 className="font-bold mb-2 text-white text-lg">Comprehensive Training</h4>
+              <p className="text-sm text-white/90 font-medium">Access to product knowledge and business training</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-              <div className="text-3xl mb-4">👥</div>
-              <h4 className="font-semibold mb-2">Supportive Community</h4>
-              <p className="text-sm opacity-80">Join a network of passionate wellness advocates</p>
+            <div className="bg-white/15 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <h4 className="font-bold mb-2 text-white text-lg">Supportive Community</h4>
+              <p className="text-sm text-white/90 font-medium">Join a network of passionate wellness advocates</p>
             </div>
           </div>
           
           <Link href="/distributor">
-            <Button className="bg-white text-nature-green px-8 py-3 hover:bg-gray-100 transition-colors touch-feedback">
+            <Button className="bg-white text-forest-green px-8 py-3 hover:bg-gray-100 transition-colors touch-feedback font-semibold">
               Learn More About Partnership
             </Button>
           </Link>
