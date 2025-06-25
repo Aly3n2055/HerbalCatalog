@@ -63,6 +63,16 @@ export function useAuth(): UseAuthReturn {
     setLoading(true);
     try {
       await loginMutation.mutateAsync(data);
+      toast({
+        title: "Welcome back!",
+        description: "You have been logged in successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: error.message || "Please check your email and password.",
+      });
     } finally {
       setLoading(false);
     }
@@ -72,6 +82,16 @@ export function useAuth(): UseAuthReturn {
     setLoading(true);
     try {
       await registerMutation.mutateAsync(data);
+      toast({
+        title: "Account created!",
+        description: "Welcome to NatureVital. You're now logged in.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: error.message || "Please try again with different details.",
+      });
     } finally {
       setLoading(false);
     }

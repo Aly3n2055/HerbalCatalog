@@ -144,9 +144,16 @@ export const loginSchema = z.object({
 
 export type LoginData = z.infer<typeof loginSchema>;
 
-// Register schema
-export const registerSchema = insertUserSchema.extend({
+// Register schema - simplified for quick signup
+export const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  username: z.string().min(3, "Username must be at least 3 characters").max(50, "Username too long"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  phone: z.string().optional(),
+  role: z.enum(["customer", "distributor"]).default("customer"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],

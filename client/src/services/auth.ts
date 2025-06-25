@@ -24,17 +24,26 @@ export interface RegisterData {
 export const authService = {
   // Login user
   async login(credentials: LoginCredentials): Promise<User> {
-    return apiClient.post<User>('/login', credentials);
+    const response = await apiClient.post<{ success: boolean; user: User; message: string }>('/auth-login', credentials);
+    if (response.success && response.user) {
+      return response.user;
+    }
+    throw new Error(response.message || 'Login failed');
   },
 
   // Register new user
   async register(userData: RegisterData): Promise<User> {
-    return apiClient.post<User>('/register', userData);
+    const response = await apiClient.post<{ success: boolean; user: User; message: string }>('/auth-register', userData);
+    if (response.success && response.user) {
+      return response.user;
+    }
+    throw new Error(response.message || 'Registration failed');
   },
 
   // Logout user (if session-based)
   async logout(): Promise<void> {
-    return apiClient.post('/logout');
+    // For now, just clear local storage - no server call needed
+    return Promise.resolve();
   },
 
   // Get current user session

@@ -304,46 +304,6 @@ export default function Account() {
               ) : (
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={registerForm.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>First Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="First name"
-                                {...field}
-                                value={field.value || ""}
-                                className="touch-feedback"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={registerForm.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Last name"
-                                {...field}
-                                value={field.value || ""}
-                                className="touch-feedback"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
                     <FormField
                       control={registerForm.control}
                       name="username"
@@ -354,8 +314,7 @@ export default function Account() {
                             <Input
                               placeholder="Choose a username"
                               {...field}
-                              value={field.value || ""}
-                              onChange={field.onChange}
+                              autoComplete="username"
                               className="touch-feedback"
                             />
                           </FormControl>
@@ -375,29 +334,7 @@ export default function Account() {
                               type="email"
                               placeholder="Enter your email"
                               {...field}
-                              value={field.value || ""}
-                              onChange={field.onChange}
-                              className="touch-feedback"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={registerForm.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone (Optional)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="tel"
-                              placeholder="Your phone number"
-                              {...field}
-                              value={field.value || ""}
-                              onChange={field.onChange}
+                              autoComplete="email"
                               className="touch-feedback"
                             />
                           </FormControl>
@@ -418,8 +355,7 @@ export default function Account() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a password"
                                 {...field}
-                                value={field.value || ""}
-                                onChange={field.onChange}
+                                autoComplete="new-password"
                                 className="touch-feedback pr-10"
                               />
                               <Button
@@ -454,8 +390,7 @@ export default function Account() {
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm your password"
                                 {...field}
-                                value={field.value || ""}
-                                onChange={field.onChange}
+                                autoComplete="new-password"
                                 className="touch-feedback pr-10"
                               />
                               <Button
