@@ -1,6 +1,6 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { productService } from '../services/products';
+import type { Product, Category } from "@shared/schema";
 
 // Query key factory
 export const productKeys = {
@@ -21,10 +21,21 @@ export function useProducts(params?: {
   featured?: boolean;
   search?: string;
 }) {
-  return useQuery({
+  return useQuery<Product[]>({
     queryKey: productKeys.list(params || {}),
-    queryFn: () => productService.getProducts(params),
-    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const response = await productService.getProducts(params);
+      if (!response) {
+        const error = new Error(`Failed to fetch products`);
+        console.error('Products fetch error:', error);
+        throw error;
+      }
+      return response;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 2,
+    retryDelay: 1000,
   });
 }
 
@@ -37,10 +48,21 @@ export function useFeaturedProducts() {
 }
 
 export function useCategories() {
-  return useQuery({
+  return useQuery<Category[]>({
     queryKey: categoryKeys.lists(),
-    queryFn: () => productService.getCategories(),
-    staleTime: 15 * 60 * 1000,
+    queryFn: async () => {
+      const response = await productService.getCategories();
+      if (!response) {
+        const error = new Error(`Failed to fetch categories`);
+        console.error('Categories fetch error:', error);
+        throw error;
+      }
+      return response;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+    retryDelay: 1000,
   });
 }
 

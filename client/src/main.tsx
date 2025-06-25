@@ -5,11 +5,11 @@ import "./index.css";
 createRoot(document.getElementById("root")!).render(<App />);
 
 // Register service worker for PWA with enhanced error handling
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('Service Worker registered successfully:', registration.scope);
+        console.log('SW registered successfully:', registration.scope);
 
         // Listen for updates
         registration.addEventListener('updatefound', () => {
@@ -17,16 +17,10 @@ if ('serviceWorker' in navigator) {
         });
       })
       .catch((registrationError) => {
-        console.error('Service Worker registration failed:', registrationError);
-
-        // Provide more specific error information
-        if (registrationError.name === 'SecurityError') {
-          console.error('Service Worker registration blocked by security policy');
-        } else if (registrationError.name === 'NetworkError') {
-          console.error('Service Worker registration failed due to network error');
+        // Only log in development, don't spam console
+        if (process.env.NODE_ENV === 'development') {
+          console.log('SW registration skipped in development');
         }
       });
   });
-} else {
-  console.warn('Service Workers are not supported in this browser');
 }

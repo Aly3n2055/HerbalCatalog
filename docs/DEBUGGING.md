@@ -1,5 +1,24 @@
 # Debugging Guide
 
+This guide provides solutions for common issues you might encounter while developing with the NatureVital codebase.
+
+## Recent Fixes Applied (Latest Update)
+
+### Service Worker Issues
+- **Problem**: SW registration failing with MIME type errors
+- **Solution**: SW registration now only occurs in production
+- **Status**: ✅ Fixed
+
+### Performance Issues
+- **Problem**: Slow page loads and excessive re-renders
+- **Solution**: Added React.memo and useMemo optimizations
+- **Status**: ✅ Fixed
+
+### Database Connection Errors
+- **Problem**: PostgreSQL connection timeouts
+- **Solution**: Improved connection pooling and error handling
+- **Status**: ✅ Fixed
+
 ## Overview
 
 This guide provides comprehensive debugging information for the NatureVital e-commerce platform, including common issues, debugging tools, and troubleshooting procedures.
@@ -119,15 +138,15 @@ console.log('PayPal Config:', {
 // Monitor PayPal SDK loading
 useEffect(() => {
   console.log('PayPal SDK loading...');
-  
+
   const script = document.createElement('script');
   script.src = process.env.NODE_ENV === 'production'
     ? 'https://www.paypal.com/web-sdk/v6/core'
     : 'https://www.sandbox.paypal.com/web-sdk/v6/core';
-    
+
   script.onload = () => console.log('PayPal SDK loaded successfully');
   script.onerror = () => console.error('PayPal SDK failed to load');
-  
+
   document.body.appendChild(script);
 }, []);
 ```
@@ -147,9 +166,9 @@ useEffect(() => {
 export async function createPaypalOrder(req: Request, res: Response) {
   try {
     const { amount, currency, intent } = req.body;
-    
+
     console.log('Creating PayPal order:', { amount, currency, intent });
-    
+
     const orderRequest = {
       body: {
         intent: intent,
@@ -162,14 +181,14 @@ export async function createPaypalOrder(req: Request, res: Response) {
       },
       prefer: "return=minimal",
     };
-    
+
     console.log('PayPal order request:', JSON.stringify(orderRequest, null, 2));
-    
+
     const { body, ...httpResponse } = await ordersController.createOrder(orderRequest);
-    
+
     console.log('PayPal response status:', httpResponse.statusCode);
     console.log('PayPal response body:', String(body));
-    
+
     const jsonResponse = JSON.parse(String(body));
     res.status(httpResponse.statusCode).json(jsonResponse);
   } catch (error) {
@@ -198,7 +217,7 @@ export async function createPaypalOrder(req: Request, res: Response) {
 // Monitor cart state changes
 const useCartDebug = () => {
   const cart = useCartStore();
-  
+
   useEffect(() => {
     console.log('Cart state changed:', {
       items: cart.items,
@@ -207,7 +226,7 @@ const useCartDebug = () => {
       isOpen: cart.isOpen,
     });
   }, [cart.items, cart.isOpen]);
-  
+
   return cart;
 };
 
@@ -236,11 +255,11 @@ const testDatabaseConnection = async () => {
   try {
     console.log('Testing database connection...');
     console.log('DATABASE_URL configured:', !!process.env.DATABASE_URL);
-    
+
     // Test basic query
     const result = await storage.getProducts();
     console.log('Database test successful:', result.length, 'products found');
-    
+
     return true;
   } catch (error) {
     console.error('Database connection failed:', {
@@ -255,16 +274,16 @@ const testDatabaseConnection = async () => {
 // Monitor query performance
 const logSlowQueries = (threshold = 1000) => {
   const originalQuery = storage.getProducts;
-  
+
   storage.getProducts = async (...args) => {
     const start = Date.now();
     const result = await originalQuery.call(storage, ...args);
     const duration = Date.now() - start;
-    
+
     if (duration > threshold) {
       console.warn(`Slow query detected: getProducts took ${duration}ms`);
     }
-    
+
     return result;
   };
 };
@@ -295,7 +314,7 @@ const useProductsDebug = () => {
     queryKey: ['/api/products'],
     queryFn: () => fetch('/api/products').then(res => res.json()),
   });
-  
+
   useEffect(() => {
     console.log('Products query state:', {
       status: query.status,
@@ -306,7 +325,7 @@ const useProductsDebug = () => {
       lastUpdated: query.dataUpdatedAt,
     });
   }, [query]);
-  
+
   return query;
 };
 
@@ -328,19 +347,19 @@ const invalidateAllQueries = () => {
 // Track component renders
 const useRenderCount = (componentName: string) => {
   const renderCount = useRef(0);
-  
+
   useEffect(() => {
     renderCount.current += 1;
     console.log(`${componentName} rendered ${renderCount.current} times`);
   });
-  
+
   return renderCount.current;
 };
 
 // Usage in components
 const ProductCard = ({ product }) => {
   const renderCount = useRenderCount('ProductCard');
-  
+
   // Component implementation
 };
 ```
@@ -370,16 +389,16 @@ setInterval(trackMemoryUsage, 10000);
 // Middleware for request timing
 app.use((req, res, next) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     console.log(`${req.method} ${req.path} - ${res.statusCode} - ${duration}ms`);
-    
+
     if (duration > 1000) {
       console.warn(`Slow request: ${req.method} ${req.path} took ${duration}ms`);
     }
   });
-  
+
   next();
 });
 ```
@@ -409,14 +428,14 @@ setInterval(logMemoryUsage, 30000);
 // Enhanced logging utility
 class Logger {
   private static instance: Logger;
-  
+
   static getInstance(): Logger {
     if (!Logger.instance) {
       Logger.instance = new Logger();
     }
     return Logger.instance;
   }
-  
+
   private log(level: string, message: string, meta: any = {}) {
     const logEntry = {
       timestamp: new Date().toISOString(),
@@ -424,18 +443,18 @@ class Logger {
       message,
       ...meta,
     };
-    
+
     console.log(JSON.stringify(logEntry));
   }
-  
+
   info(message: string, meta?: any) {
     this.log('info', message, meta);
   }
-  
+
   warn(message: string, meta?: any) {
     this.log('warn', message, meta);
   }
-  
+
   error(message: string, error?: Error, meta?: any) {
     this.log('error', message, {
       error: error?.message,
@@ -459,24 +478,24 @@ class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false, error: null };
   }
-  
+
   static getDerivedStateFromError(error) {
     return { hasError: true, error };
   }
-  
+
   componentDidCatch(error, errorInfo) {
     console.error('React Error Boundary caught error:', {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
     });
-    
+
     // Send to error tracking service
     if (process.env.NODE_ENV === 'production') {
       // sendErrorToService(error, errorInfo);
     }
   }
-  
+
   render() {
     if (this.state.hasError) {
       return (
@@ -489,7 +508,7 @@ class ErrorBoundary extends React.Component {
         </div>
       );
     }
-    
+
     return this.props.children;
   }
 }
@@ -508,14 +527,14 @@ const testAPIEndpoints = async () => {
     { method: 'GET', url: '/api/categories' },
     { method: 'GET', url: '/api/auth/me' },
   ];
-  
+
   for (const endpoint of endpoints) {
     try {
       const response = await fetch(endpoint.url, {
         method: endpoint.method,
         credentials: 'include',
       });
-      
+
       console.log(`${endpoint.method} ${endpoint.url}:`, {
         status: response.status,
         ok: response.ok,
@@ -535,25 +554,25 @@ const validateDataIntegrity = async () => {
   try {
     const products = await storage.getProducts();
     const categories = await storage.getCategories();
-    
+
     // Check for orphaned products
     const orphanedProducts = products.filter(product => 
       !categories.find(cat => cat.id === product.categoryId)
     );
-    
+
     if (orphanedProducts.length > 0) {
       console.warn('Orphaned products found:', orphanedProducts);
     }
-    
+
     // Check for invalid prices
     const invalidPrices = products.filter(product => 
       isNaN(parseFloat(product.price)) || parseFloat(product.price) <= 0
     );
-    
+
     if (invalidPrices.length > 0) {
       console.warn('Invalid prices found:', invalidPrices);
     }
-    
+
     console.log('Data integrity check completed');
   } catch (error) {
     console.error('Data integrity check failed:', error);
@@ -611,7 +630,7 @@ app.get('/api/health', async (req, res) => {
     environment: process.env.NODE_ENV,
     checks: {},
   };
-  
+
   // Database check
   try {
     await storage.getProducts();
@@ -620,7 +639,7 @@ app.get('/api/health', async (req, res) => {
     health.checks.database = 'error';
     health.status = 'error';
   }
-  
+
   // PayPal check
   try {
     await getClientToken();
@@ -628,7 +647,7 @@ app.get('/api/health', async (req, res) => {
   } catch (error) {
     health.checks.paypal = 'error';
   }
-  
+
   res.status(health.status === 'ok' ? 200 : 503).json(health);
 });
 ```
@@ -639,24 +658,24 @@ app.get('/api/health', async (req, res) => {
 class Metrics {
   private static counters = new Map<string, number>();
   private static timers = new Map<string, number[]>();
-  
+
   static increment(metric: string, value = 1) {
     const current = this.counters.get(metric) || 0;
     this.counters.set(metric, current + value);
   }
-  
+
   static time(metric: string, duration: number) {
     const times = this.timers.get(metric) || [];
     times.push(duration);
     this.timers.set(metric, times);
   }
-  
+
   static getReport() {
     const report = {
       counters: Object.fromEntries(this.counters),
       timers: {},
     };
-    
+
     for (const [metric, times] of this.timers) {
       report.timers[metric] = {
         count: times.length,
@@ -665,7 +684,7 @@ class Metrics {
         max: Math.max(...times),
       };
     }
-    
+
     return report;
   }
 }

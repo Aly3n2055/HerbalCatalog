@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, memo, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import ProductCard from "@/components/product-card";
@@ -12,7 +12,7 @@ import { ProductCardSkeleton, CategoryCardSkeleton } from "@/components/ui/skele
 import { Search, Filter } from "lucide-react";
 import { Product, Category } from "@shared/schema";
 
-export default function Products() {
+const Products = memo(() => {
   const { category: categorySlug } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
@@ -41,21 +41,28 @@ export default function Products() {
     },
   });
 
-  const selectedCategory = categories.find(cat => cat.slug === categorySlug);
+  const selectedCategory = useMemo(() => 
+    categories.find(cat => cat.slug === categorySlug), 
+    [categories, categorySlug]
+  );
 
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return parseFloat(a.price) - parseFloat(b.price);
-      case "price-high":
-        return parseFloat(b.price) - parseFloat(a.price);
-      case "rating":
-        return parseFloat(b.rating || "0") - parseFloat(a.rating || "0");
-      case "name":
-      default:
-        return a.name.localeCompare(b.name);
-    }
-  });
+  const sortedProducts = useMemo(() => {
+    if (!products.length) return [];
+    
+    return [...products].sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return parseFloat(a.price) - parseFloat(b.price);
+        case "price-high":
+          return parseFloat(b.price) - parseFloat(a.price);
+        case "rating":
+          return parseFloat(b.rating || "0") - parseFloat(a.rating || "0");
+        case "name":
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+  }, [products, sortBy]);
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -149,4 +156,8 @@ export default function Products() {
       </div>
     </div>
   );
-}
+});
+
+Products.displayName = 'Products';
+
+export default Products;

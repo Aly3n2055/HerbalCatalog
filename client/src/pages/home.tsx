@@ -8,8 +8,9 @@ import { ProductCardSkeleton, CategoryCardSkeleton, TestimonialCardSkeleton } fr
 import { Star, DollarSign, BookOpen, Users } from "lucide-react";
 import { Link } from "wouter";
 import { Product, Category } from "@shared/schema";
+import { memo } from "react";
 
-export default function Home() {
+const Home = memo(() => {
   const { data: featuredProducts = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products?featured=true"],
     queryFn: async () => {
@@ -288,10 +289,12 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 NatureVital. All rights reserved. | Privacy Policy | Terms of Service</p>
+            <p>&copy; 2024 NatureVital. Allrights reserved. | Privacy Policy | Terms of Service</p>
           </div>
         </div>
       </footer>
     </div>
   );
-}
+});
+
+export default Home;
