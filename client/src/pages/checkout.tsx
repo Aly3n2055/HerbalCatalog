@@ -8,23 +8,44 @@ import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import PayPalButton from "@/components/PayPalButton";
+import EnhancedPayment from "@/components/enhanced-payment";
 
 const CheckoutForm = () => {
-  const { getTotalPrice } = useCart();
+  const { getTotalPrice, clearCart } = useCart();
+  const { toast } = useToast();
+
+  const handlePaymentSuccess = (data: any) => {
+    toast({
+      variant: "success",
+      title: "✓ Payment Successful!",
+      description: "Your order has been processed successfully.",
+      duration: 5000,
+    });
+    
+    // Clear cart after successful payment
+    setTimeout(() => {
+      clearCart();
+      // Could redirect to order confirmation page here
+    }, 2000);
+  };
+
+  const handlePaymentError = (error: any) => {
+    toast({
+      variant: "destructive",
+      title: "Payment Failed",
+      description: error.message || "There was an error processing your payment. Please try again.",
+      duration: 5000,
+    });
+  };
 
   return (
     <div className="space-y-6">
-      <div className="p-4 bg-stone-50 rounded-lg">
-        <p className="text-sm text-gray-600 mb-4">
-          You will be redirected to PayPal to complete your payment securely.
-        </p>
-        <PayPalButton 
-          amount={getTotalPrice().toFixed(2)}
-          currency="USD"
-          intent="CAPTURE"
-        />
-      </div>
+      <EnhancedPayment
+        amount={getTotalPrice().toFixed(2)}
+        currency="USD"
+        onPaymentSuccess={handlePaymentSuccess}
+        onPaymentError={handlePaymentError}
+      />
     </div>
   );
 };

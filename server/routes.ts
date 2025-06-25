@@ -5,6 +5,15 @@ import { insertDistributorLeadSchema, loginSchema, registerSchema } from "@share
 import bcrypt from "bcrypt";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 
+function getCardType(cardNumber: string): string {
+  const number = cardNumber.replace(/\s/g, '');
+  if (/^4/.test(number)) return 'Visa';
+  if (/^5[1-5]/.test(number)) return 'Mastercard';
+  if (/^3[47]/.test(number)) return 'American Express';
+  if (/^6/.test(number)) return 'Discover';
+  return 'Unknown';
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // PayPal routes
@@ -19,6 +28,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
+  });
+
+  app.post("/paypal/card-payment", async (req, res) => {
+    try {
+      const { amount, currency, card } = req.body;
+      
+      // For demo purposes, simulate successful card processing
+      // In production, this would integrate with PayPal's card processing API
+      const paymentResult = {
+        id: `CARD_${Date.now()}`,
+        status: "COMPLETED",
+        amount: { currency_code: currency, value: amount },
+        card: {
+          last_digits: card.number.slice(-4),
+          type: getCardType(card.number)
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      res.json({
+        success: true,
+        payment: paymentResult,
+        message: "Payment processed successfully"
+      });
+    } catch (error: any) {
+      res.status(400).json({ 
+        success: false, 
+        message: error.message || "Payment processing failed" 
+      });
+    }
   });
   
   // Auth routes

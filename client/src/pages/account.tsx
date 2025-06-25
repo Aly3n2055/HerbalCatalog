@@ -15,6 +15,7 @@ import { User, ShoppingBag, Heart, Settings, LogOut, Eye, EyeOff } from "lucide-
 import { useAuth } from "@/hooks/use-auth";
 import { loginSchema, registerSchema, type LoginData, type RegisterData } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 
 export default function Account() {
   const { user, login, register, logout, isLoading } = useAuth();
@@ -60,7 +61,6 @@ export default function Account() {
   if (user) {
     return (
       <div className="min-h-screen bg-stone-50">
-        <Header />
         <CartDrawer />
 
         <div className="px-4 py-6">
@@ -163,9 +163,11 @@ export default function Account() {
                     <div className="text-center py-8">
                       <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-500 mb-4">No orders yet</p>
-                      <Button className="bg-nature-green hover:bg-forest-green">
-                        Start Shopping
-                      </Button>
+                      <Link href="/products">
+                        <Button className="bg-nature-green hover:bg-forest-green">
+                          Start Shopping
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
