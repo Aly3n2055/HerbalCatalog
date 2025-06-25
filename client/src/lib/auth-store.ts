@@ -1,8 +1,9 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { User } from "@shared/schema";
 
-interface AuthStore {
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { User } from '@shared/schema';
+
+interface AuthState {
   user: User | null;
   isLoading: boolean;
   setUser: (user: User | null) => void;
@@ -10,26 +11,17 @@ interface AuthStore {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
       isLoading: false,
-      
-      setUser: (user: User | null) => {
-        set({ user });
-      },
-      
-      setLoading: (isLoading: boolean) => {
-        set({ isLoading });
-      },
-      
-      logout: () => {
-        set({ user: null });
-      },
+      setUser: (user) => set({ user, isLoading: false }),
+      setLoading: (isLoading) => set({ isLoading }),
+      logout: () => set({ user: null, isLoading: false }),
     }),
     {
-      name: "naturevital-auth",
+      name: 'auth-storage',
       partialize: (state) => ({ user: state.user }),
     }
   )
