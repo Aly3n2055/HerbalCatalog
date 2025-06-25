@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { productService, type Product, type Category } from '../services/products';
 

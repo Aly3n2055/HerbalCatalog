@@ -61,6 +61,7 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
+        <Toaster />
         <Header />
         <PWAInstallPrompt />
         <CartDrawer />

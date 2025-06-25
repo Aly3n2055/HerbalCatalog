@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 
+import { useAuth } from "@/hooks/use-auth";
+
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
