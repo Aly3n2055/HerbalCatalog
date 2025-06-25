@@ -246,6 +246,8 @@ export default function Account() {
                               type="email"
                               placeholder="Enter your email"
                               {...field}
+                              value={field.value || ""}
+                              onChange={field.onChange}
                               className="touch-feedback"
                             />
                           </FormControl>
@@ -266,6 +268,8 @@ export default function Account() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter your password"
                                 {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
                                 className="touch-feedback pr-10"
                               />
                               <Button
@@ -350,6 +354,8 @@ export default function Account() {
                             <Input
                               placeholder="Choose a username"
                               {...field}
+                              value={field.value || ""}
+                              onChange={field.onChange}
                               className="touch-feedback"
                             />
                           </FormControl>
@@ -369,6 +375,8 @@ export default function Account() {
                               type="email"
                               placeholder="Enter your email"
                               {...field}
+                              value={field.value || ""}
+                              onChange={field.onChange}
                               className="touch-feedback"
                             />
                           </FormControl>
@@ -410,6 +418,8 @@ export default function Account() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a password"
                                 {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
                                 className="touch-feedback pr-10"
                               />
                               <Button
@@ -444,6 +454,8 @@ export default function Account() {
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm your password"
                                 {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
                                 className="touch-feedback pr-10"
                               />
                               <Button
