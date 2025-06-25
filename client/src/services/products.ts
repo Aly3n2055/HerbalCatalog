@@ -1,4 +1,3 @@
-
 import { apiClient } from './api';
 
 export interface Product {
@@ -26,14 +25,14 @@ export const productService = {
     search?: string;
   }): Promise<Product[]> {
     const searchParams = new URLSearchParams();
-    
+
     if (params?.category) searchParams.set('category', params.category);
     if (params?.featured) searchParams.set('featured', 'true');
     if (params?.search) searchParams.set('search', params.search);
-    
+
     const query = searchParams.toString();
     const endpoint = query ? `/products?${query}` : '/products';
-    
+
     return apiClient.get<Product[]>(endpoint);
   },
 

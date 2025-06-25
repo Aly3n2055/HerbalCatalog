@@ -39,7 +39,7 @@ export function useProduct(id: number) {
 export function useFeaturedProducts() {
   return useQuery({
     queryKey: productKeys.list({ featured: true }),
-    queryFn: () => productService.getFeaturedProducts(),
+    queryFn: () => productService.getProducts({ featured: true }),
     staleTime: 10 * 60 * 1000, // Cache longer for featured products
   });
 }
