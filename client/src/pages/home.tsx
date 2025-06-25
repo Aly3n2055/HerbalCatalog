@@ -125,39 +125,39 @@ export default function Home() {
       </section>
 
       {/* Distributor CTA Section */}
-      <section className="py-12 px-4 bg-gradient-to-r from-forest-green to-nature-green">
+      <section className="py-12 px-4 bg-gray-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white drop-shadow-lg">Join Our Wellness Community</h2>
-          <p className="text-lg text-white mb-8 font-medium drop-shadow-md leading-relaxed">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">Join Our Wellness Community</h2>
+          <p className="text-lg text-gray-200 mb-8 font-medium leading-relaxed">
             Become a Herbal Wellness Clinic partner and share the power of natural wellness while building your own business.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
-              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="h-6 w-6 text-white drop-shadow-md" />
+            <div className="bg-gray-700 rounded-xl p-6 border border-gray-600 shadow-lg">
+              <div className="w-12 h-12 bg-nature-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-bold mb-3 text-white text-lg drop-shadow-lg">Competitive Commissions</h4>
-              <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Earn up to 30% on personal sales and team bonuses</p>
+              <h4 className="font-bold mb-3 text-white text-lg">Competitive Commissions</h4>
+              <p className="text-gray-300 font-medium leading-relaxed">Earn up to 30% on personal sales and team bonuses</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
-              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="h-6 w-6 text-white drop-shadow-md" />
+            <div className="bg-gray-700 rounded-xl p-6 border border-gray-600 shadow-lg">
+              <div className="w-12 h-12 bg-nature-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-bold mb-3 text-white text-lg drop-shadow-lg">Comprehensive Training</h4>
-              <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Access to product knowledge and business training</p>
+              <h4 className="font-bold mb-3 text-white text-lg">Comprehensive Training</h4>
+              <p className="text-gray-300 font-medium leading-relaxed">Access to product knowledge and business training</p>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
-              <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-6 w-6 text-white drop-shadow-md" />
+            <div className="bg-gray-700 rounded-xl p-6 border border-gray-600 shadow-lg">
+              <div className="w-12 h-12 bg-nature-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-bold mb-3 text-white text-lg drop-shadow-lg">Supportive Community</h4>
-              <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Join a network of passionate wellness advocates</p>
+              <h4 className="font-bold mb-3 text-white text-lg">Supportive Community</h4>
+              <p className="text-gray-300 font-medium leading-relaxed">Join a network of passionate wellness advocates</p>
             </div>
           </div>
 
           <Link href="/distributor">
-            <Button className="bg-white text-forest-green px-8 py-4 hover:bg-gray-100 transition-all duration-300 touch-feedback font-semibold rounded-xl shadow-lg hover:shadow-xl">
+            <Button className="bg-nature-green text-white px-8 py-4 hover:bg-forest-green transition-all duration-300 touch-feedback font-semibold rounded-xl shadow-lg hover:shadow-xl">
               Learn More About Partnership
             </Button>
           </Link>
@@ -201,7 +201,7 @@ export default function Home() {
                     <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-readable-muted mb-4">
+                <p className="text-gray-600 mb-4">
                   "Fast shipping, quality products, and excellent customer service. NatureVital has become my go-to for all natural supplements."
                 </p>
                 <div className="flex items-center space-x-3">
@@ -225,7 +225,7 @@ export default function Home() {
                     <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-readable-muted mb-4">
+                <p className="text-gray-600 mb-4">
                   "Being a distributor has allowed me to share products I truly believe in while building a meaningful income stream."
                 </p>
                 <div className="flex items-center space-x-3">
