@@ -133,21 +133,21 @@ export default function Home() {
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-700 rounded-xl p-6 border border-gray-600 shadow-lg">
+            <div className="bg-nature-green/20 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
               <div className="w-12 h-12 bg-nature-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
               <h4 className="font-bold mb-3 text-white text-lg">Competitive Commissions</h4>
               <p className="text-gray-300 font-medium leading-relaxed">Earn up to 30% on personal sales and team bonuses</p>
             </div>
-            <div className="bg-gray-700 rounded-xl p-6 border border-gray-600 shadow-lg">
+            <div className="bg-nature-green/20 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
               <div className="w-12 h-12 bg-nature-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="h-6 w-6 text-white" />
               </div>
               <h4 className="font-bold mb-3 text-white text-lg">Comprehensive Training</h4>
               <p className="text-gray-300 font-medium leading-relaxed">Access to product knowledge and business training</p>
             </div>
-            <div className="bg-gray-700 rounded-xl p-6 border border-gray-600 shadow-lg">
+            <div className="bg-nature-green/20 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
               <div className="w-12 h-12 bg-nature-green rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-6 w-6 text-white" />
               </div>
