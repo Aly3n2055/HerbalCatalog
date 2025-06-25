@@ -6,6 +6,7 @@ import {
   type DistributorLead, type InsertDistributorLead
 } from "@shared/schema";
 import { db } from "./db";
+import { eq, ilike, and, or, desc } from "drizzle-orm";
 
 if (!db) {
   throw new Error('Database connection not initialized');
@@ -443,13 +444,10 @@ export class DatabaseStorage implements IStorage {
 
   async getProductsByCategory(categorySlug: string): Promise<Product[]> {
     console.log(`[DB] Getting products by category: ${categorySlug}`);
-    const category = await this.getCategory(categorySlug);
-    if (!category) return [];
-
     return await db
       .select()
       .from(products)
-      .where(eq(products.category, category.id))
+      .where(eq(products.category, categorySlug))
       .orderBy(desc(products.featured), products.name);
   }
 

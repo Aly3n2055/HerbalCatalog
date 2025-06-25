@@ -20,12 +20,20 @@ export const queryClient = new QueryClient({
   },
 });
 
-
 // Define and export the apiRequest function
-export const apiRequest = async (url: string, options: RequestInit) => {
-  const response = await fetch(url, options);
+export const apiRequest = async (url: string, options: RequestInit = {}) => {
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  });
+  
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    const errorText = await response.text();
+    throw new Error(`HTTP ${response.status}: ${errorText || 'Network response was not ok'}`);
   }
+  
   return response.json();
 };

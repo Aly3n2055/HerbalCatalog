@@ -19,6 +19,12 @@ export default function ProductDetail() {
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${id}`],
+    queryFn: async () => {
+      const response = await fetch(`/api/products/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch product");
+      return response.json();
+    },
+    enabled: !!id,
   });
 
   const handleAddToCart = () => {

@@ -155,6 +155,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/cart/clear/:userId", async (req, res) => {
+    try {
+      await storage.clearCart(parseInt(req.params.userId));
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Orders routes
   app.post("/api/orders", async (req, res) => {
     try {
