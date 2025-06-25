@@ -389,14 +389,13 @@ export default function Account() {
                           <FormControl>
                             <div className="relative">
                               <Input
+                                {...field}
                                 placeholder="Choose a username"
                                 value={field.value || ""}
                                 onChange={(e) => {
                                   const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
                                   field.onChange(value);
                                 }}
-                                onBlur={field.onBlur}
-                                name={field.name}
                                 autoComplete="username"
                                 className="touch-feedback pr-10"
                               />
@@ -437,12 +436,10 @@ export default function Account() {
                           <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
+                              {...field}
                               type="email"
                               placeholder="Enter your email"
                               value={field.value || ""}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
                               autoComplete="email"
                               className="touch-feedback"
                             />
