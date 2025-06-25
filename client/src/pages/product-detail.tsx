@@ -4,6 +4,7 @@ import { Star, ShoppingCart, ArrowLeft, Heart } from "lucide-react";
 import Header from "@/components/header";
 import CartDrawer from "@/components/cart-drawer";
 import BottomNavigation from "@/components/bottom-navigation";
+import ProductDetailSkeleton from "@/components/skeletons/product-detail-skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -63,19 +64,8 @@ export default function ProductDetail() {
     return (
       <div className="min-h-screen bg-stone-50">
         <Header />
-        <div className="px-4 py-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-gray-200 aspect-square rounded-lg skeleton"></div>
-              <div className="space-y-4">
-                <div className="bg-gray-200 h-8 rounded skeleton"></div>
-                <div className="bg-gray-200 h-4 rounded skeleton"></div>
-                <div className="bg-gray-200 h-4 rounded skeleton"></div>
-                <div className="bg-gray-200 h-10 rounded skeleton"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CartDrawer />
+        <ProductDetailSkeleton />
         <BottomNavigation />
       </div>
     );

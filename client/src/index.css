@@ -24,6 +24,25 @@
   }
 }
 
+/* Skeleton Loading Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 /* Cart notification enhancement */
 .toast-success {
   animation: toast-slide-in 0.3s ease-out, toast-pulse 2s ease-in-out;

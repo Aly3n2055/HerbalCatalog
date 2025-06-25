@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Header from "@/components/header";
-import CartDrawer from "@/components/cart-drawer";
+import { zodResolver } from "@hookform/resolvers/zod"
+import CartDrawer from  "@/components/cart-drawer";
 import BottomNavigation from "@/components/bottom-navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,7 +57,6 @@ export default function Distributor() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
       <CartDrawer />
 
       {/* Hero Section */}
