@@ -2,9 +2,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "wouter";
-import Header from "@/components/header";
-import CartDrawer from "@/components/cart-drawer";
-import BottomNavigation from "@/components/bottom-navigation";
 import ProductCard from "@/components/product-card";
 import CategoryCard from "@/components/category-card";
 import { Button } from "@/components/ui/button";
@@ -22,16 +19,26 @@ export default function Products() {
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
+    queryFn: async () => {
+      const response = await fetch("/api/categories");
+      if (!response.ok) throw new Error("Failed to fetch categories");
+      return response.json();
+    },
   });
 
+  const apiUrl = categorySlug
+    ? `/api/products?category=${categorySlug}`
+    : searchQuery
+    ? `/api/products?search=${searchQuery}`
+    : "/api/products";
+
   const { data: products = [], isLoading } = useQuery<Product[]>({
-    queryKey: [
-      categorySlug
-        ? `/api/products?category=${categorySlug}`
-        : searchQuery
-        ? `/api/products?search=${searchQuery}`
-        : "/api/products"
-    ],
+    queryKey: [apiUrl],
+    queryFn: async () => {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error("Failed to fetch products");
+      return response.json();
+    },
   });
 
   const selectedCategory = categories.find(cat => cat.slug === categorySlug);
@@ -52,9 +59,6 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
-      <CartDrawer />
-
       <div className="px-4 py-6 pt-20">
         <div className="max-w-6xl mx-auto">
           {/* Page Header */}
@@ -143,8 +147,6 @@ export default function Products() {
           )}
         </div>
       </div>
-
-      <BottomNavigation />
     </div>
   );
 }

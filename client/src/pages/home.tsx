@@ -1,10 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import Header from "@/components/header";
-import CartDrawer from "@/components/cart-drawer";
-import BottomNavigation from "@/components/bottom-navigation";
 import ProductCard from "@/components/product-card";
 import CategoryCard from "@/components/category-card";
-import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,17 +12,24 @@ import { Product, Category } from "@shared/schema";
 export default function Home() {
   const { data: featuredProducts = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products?featured=true"],
+    queryFn: async () => {
+      const response = await fetch("/api/products?featured=true");
+      if (!response.ok) throw new Error("Failed to fetch featured products");
+      return response.json();
+    },
   });
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
+    queryFn: async () => {
+      const response = await fetch("/api/categories");
+      if (!response.ok) throw new Error("Failed to fetch categories");
+      return response.json();
+    },
   });
 
   return (
     <div className="min-h-screen bg-stone-50 pt-16">
-      <PWAInstallPrompt />
-      <Header />
-      <CartDrawer />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden h-[70vh] sm:h-[80vh] lg:h-96">
@@ -289,8 +292,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      <BottomNavigation />
     </div>
   );
 }
