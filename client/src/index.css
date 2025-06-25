@@ -3,6 +3,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Enhanced Toast Animations */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+/* Cart notification enhancement */
+.toast-success {
+  animation: toast-slide-in 0.3s ease-out, toast-pulse 2s ease-in-out;
+  border: 2px solid #22c55e !important;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.2) !important;
+}
+
 /* Performance optimizations */
 * {
   box-sizing: border-box;

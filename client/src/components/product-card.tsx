@@ -21,8 +21,10 @@ export default function ProductCard({ product, className = "" }: ProductCardProp
     e.stopPropagation();
     addItem(product);
     toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
+      variant: "success",
+      title: "✓ Added to Cart!",
+      description: `${product.name} has been successfully added to your cart.`,
+      duration: 4000,
     });
   };
 
