@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Header from "@/components/header";
@@ -11,11 +11,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { User, ShoppingBag, Heart, Settings, LogOut, Eye, EyeOff } from "lucide-react";
+import { User, ShoppingBag, Heart, Settings, LogOut, Eye, EyeOff, Check, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { loginSchema, registerSchema, type LoginData, type RegisterData } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { apiClient } from "@/services/api";
 
 export default function Account() {
   const { user, login, register, logout, isLoading } = useAuth();
@@ -23,6 +24,11 @@ export default function Account() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState<{
+    checking: boolean;
+    available: boolean | null;
+    message: string;
+  }>({ checking: false, available: null, message: "" });
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -57,6 +63,43 @@ export default function Account() {
   const handleLogout = () => {
     logout();
   };
+
+  // Debounced username availability check
+  const checkUsernameAvailability = useCallback(async (username: string) => {
+    if (!username || username.length < 3) {
+      setUsernameStatus({ checking: false, available: null, message: "" });
+      return;
+    }
+
+    setUsernameStatus({ checking: true, available: null, message: "Checking..." });
+
+    try {
+      const response = await apiClient.get(`/check-username?username=${encodeURIComponent(username)}`);
+      setUsernameStatus({
+        checking: false,
+        available: response.available,
+        message: response.available ? "Username is available!" : response.reason || "Username is not available"
+      });
+    } catch (error) {
+      setUsernameStatus({
+        checking: false,
+        available: false,
+        message: "Error checking username availability"
+      });
+    }
+  }, []);
+
+  // Debounce username check
+  useEffect(() => {
+    const username = registerForm.watch("username");
+    if (!username) return;
+
+    const timer = setTimeout(() => {
+      checkUsernameAvailability(username);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [registerForm.watch("username"), checkUsernameAvailability]);
 
   if (user) {
     return (
@@ -311,13 +354,42 @@ export default function Account() {
                         <FormItem>
                           <FormLabel>Username</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Choose a username"
-                              {...field}
-                              autoComplete="username"
-                              className="touch-feedback"
-                            />
+                            <div className="relative">
+                              <Input
+                                placeholder="Choose a username"
+                                {...field}
+                                value={field.value || ""}
+                                onChange={(e) => {
+                                  const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+                                  field.onChange(value);
+                                }}
+                                autoComplete="username"
+                                className="touch-feedback pr-10"
+                              />
+                              <div className="absolute right-0 top-0 h-full flex items-center px-3">
+                                {usernameStatus.checking && (
+                                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                                )}
+                                {!usernameStatus.checking && usernameStatus.available === true && (
+                                  <Check className="h-4 w-4 text-green-500" />
+                                )}
+                                {!usernameStatus.checking && usernameStatus.available === false && (
+                                  <X className="h-4 w-4 text-red-500" />
+                                )}
+                              </div>
+                            </div>
                           </FormControl>
+                          {usernameStatus.message && (
+                            <p className={`text-sm ${
+                              usernameStatus.available === true 
+                                ? 'text-green-600' 
+                                : usernameStatus.available === false 
+                                ? 'text-red-600' 
+                                : 'text-gray-500'
+                            }`}>
+                              {usernameStatus.message}
+                            </p>
+                          )}
                           <FormMessage />
                         </FormItem>
                       )}

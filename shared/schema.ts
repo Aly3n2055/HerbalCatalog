@@ -144,10 +144,27 @@ export const loginSchema = z.object({
 
 export type LoginData = z.infer<typeof loginSchema>;
 
+// Username validation helper
+const usernameSchema = z.string()
+  .min(3, "Username must be at least 3 characters")
+  .max(20, "Username must be 20 characters or less")
+  .regex(/^[a-z0-9_]+$/, "Username can only contain lowercase letters, numbers, and underscores")
+  .regex(/^[a-z]/, "Username must start with a letter")
+  .refine((username) => {
+    // Reserved usernames
+    const reserved = [
+      'admin', 'administrator', 'root', 'api', 'www', 'mail', 'email',
+      'support', 'help', 'info', 'contact', 'sales', 'marketing',
+      'system', 'user', 'users', 'account', 'accounts', 'profile',
+      'settings', 'config', 'test', 'demo', 'sample', 'null', 'undefined'
+    ];
+    return !reserved.includes(username);
+  }, "This username is not available");
+
 // Register schema - simplified for quick signup
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  username: z.string().min(3, "Username must be at least 3 characters").max(50, "Username too long"),
+  username: usernameSchema,
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
   firstName: z.string().optional(),

@@ -388,6 +388,10 @@ export class MemStorage implements IStorage {
   async getDistributorLeads(): Promise<DistributorLead[]> {
     return Array.from(this.distributorLeads.values());
   }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
 }
 
 /**
@@ -630,6 +634,13 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(distributorLeads)
       .orderBy(desc(distributorLeads.createdAt));
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    if (!db) throw new Error('Database not connected');
+    console.log(`[DB] Getting user by username: ${username}`);
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 }
 
