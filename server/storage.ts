@@ -400,18 +400,21 @@ export class DatabaseStorage implements IStorage {
 
   // User Operations
   async getUser(id: number): Promise<User | undefined> {
+    if (!db) throw new Error('Database not connected');
     console.log(`[DB] Getting user ${id}`);
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
+    if (!db) throw new Error('Database not connected');
     console.log(`[DB] Getting user by email: ${email}`);
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    if (!db) throw new Error('Database not connected');
     console.log(`[DB] Creating user: ${insertUser.email}`);
     const [user] = await db
       .insert(users)
@@ -424,6 +427,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserStripeInfo(id: number, customerId: string, subscriptionId?: string): Promise<User> {
+    if (!db) throw new Error('Database not connected');
     console.log(`[DB] Updating user ${id} Stripe info`);
     const [user] = await db
       .update(users)
