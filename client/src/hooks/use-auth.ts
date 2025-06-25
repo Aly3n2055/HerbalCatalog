@@ -99,17 +99,16 @@ export function useAuth(): UseAuthReturn {
     try {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...apiData } = userData;
-      await registerMutation.mutateAsync(apiData);
-      toast({
-        title: "Account created!",
-        description: "Welcome to NatureVital. You're now logged in.",
-      });
+      
+      // Clean up empty optional fields
+      const cleanedData = Object.fromEntries(
+        Object.entries(apiData).filter(([_, value]) => value !== "")
+      );
+      
+      await registerMutation.mutateAsync(cleanedData as RegisterData);
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: error.message || "Please try again with different details.",
-      });
+      console.error('Registration error:', error);
+      // Error handling is done in the mutation onError callback
     } finally {
       setLoading(false);
     }

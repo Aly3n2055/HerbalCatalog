@@ -57,6 +57,36 @@ export default function Account() {
   };
 
   const onRegister = async (data: RegisterData) => {
+    // Check username availability before submitting
+    if (usernameStatus.available === false) {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: "Please choose a different username.",
+      });
+      return;
+    }
+    
+    // Validate that required fields are not empty
+    if (!data.username || !data.email || !data.password || !data.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: "Please fill in all required fields.",
+      });
+      return;
+    }
+    
+    // Validate password confirmation
+    if (data.password !== data.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: "Passwords do not match.",
+      });
+      return;
+    }
+    
     await register(data);
   };
 
@@ -92,15 +122,17 @@ export default function Account() {
 
   // Debounce username check
   useEffect(() => {
-    const username = registerForm.watch("username");
-    if (!username) return;
+    const subscription = registerForm.watch((value, { name }) => {
+      if (name === "username" && value.username) {
+        const timer = setTimeout(() => {
+          checkUsernameAvailability(value.username);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    });
 
-    const timer = setTimeout(() => {
-      checkUsernameAvailability(username);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [registerForm.watch("username"), checkUsernameAvailability]);
+    return () => subscription.unsubscribe();
+  }, [registerForm, checkUsernameAvailability]);
 
   if (user) {
     return (
@@ -407,7 +439,10 @@ export default function Account() {
                             <Input
                               type="email"
                               placeholder="Enter your email"
-                              {...field}
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
                               autoComplete="email"
                               className="touch-feedback"
                             />
@@ -428,7 +463,10 @@ export default function Account() {
                               <Input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a password"
-                                {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
                                 autoComplete="new-password"
                                 className="touch-feedback pr-10"
                               />
@@ -463,7 +501,10 @@ export default function Account() {
                               <Input
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm your password"
-                                {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
                                 autoComplete="new-password"
                                 className="touch-feedback pr-10"
                               />
@@ -487,10 +528,79 @@ export default function Account() {
                       )}
                     />
 
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField
+                        control={registerForm.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name (Optional)</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your first name"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
+                                autoComplete="given-name"
+                                className="touch-feedback"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={registerForm.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name (Optional)</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Enter your last name"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
+                                autoComplete="family-name"
+                                className="touch-feedback"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={registerForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number (Optional)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              placeholder="Enter your phone number"
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              autoComplete="tel"
+                              className="touch-feedback"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <Button
                       type="submit"
                       className="w-full bg-nature-green hover:bg-forest-green touch-feedback"
-                      disabled={isLoading}
+                      disabled={isLoading || (usernameStatus.available === false)}
                     >
                       {isLoading ? "Creating account..." : "Create Account"}
                     </Button>
