@@ -1,41 +1,34 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { productService, type Product, type Category } from '../services/products';
 
-// Query key factory for products
+// Query key factory
 export const productKeys = {
   all: ['products'] as const,
   lists: () => [...productKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...productKeys.lists(), filters] as const,
+  list: (filters: Record<string, unknown>) => [...productKeys.lists(), { filters }] as const,
   details: () => [...productKeys.all, 'detail'] as const,
-  detail: (id: number) => [...productKeys.details(), id] as const,
-  categories: ['categories'] as const,
+  detail: (id: string) => [...productKeys.details(), id] as const,
 };
 
-// Get all products with filters
-export function useProducts(filters?: {
+export const categoryKeys = {
+  all: ['categories'] as const,
+  lists: () => [...categoryKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) => [...categoryKeys.lists(), { filters }] as const,
+};
+
+export function useProducts(params?: {
   category?: string;
   featured?: boolean;
   search?: string;
 }) {
   return useQuery({
-    queryKey: productKeys.list(filters || {}),
-    queryFn: () => productService.getProducts(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    queryKey: productKeys.list(params || {}),
+    queryFn: () => productService.getProducts(params),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 }
 
-// Get single product
-export function useProduct(id: number) {
-  return useQuery({
-    queryKey: productKeys.detail(id),
-    queryFn: () => productService.getProduct(id),
-    staleTime: 5 * 60 * 1000,
-    enabled: !!id,
-  });
-}
-
-// Get featured products
 export function useFeaturedProducts() {
   return useQuery({
     queryKey: productKeys.list({ featured: true }),
@@ -44,21 +37,19 @@ export function useFeaturedProducts() {
   });
 }
 
-// Get categories
 export function useCategories() {
   return useQuery({
-    queryKey: productKeys.categories,
+    queryKey: categoryKeys.lists(),
     queryFn: () => productService.getCategories(),
-    staleTime: 15 * 60 * 1000, // Cache categories longer
+    staleTime: 15 * 60 * 1000, // Categories change less frequently
   });
 }
 
-// Search products with debouncing
-export function useProductSearch(query: string, enabled = true) {
+export function useProduct(id: string) {
   return useQuery({
-    queryKey: productKeys.list({ search: query }),
-    queryFn: () => productService.searchProducts(query),
-    staleTime: 2 * 60 * 1000,
-    enabled: enabled && query.length > 2,
+    queryKey: productKeys.detail(id),
+    queryFn: () => productService.getProduct(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
   });
 }

@@ -62,11 +62,23 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Toaster />
-        <Header />
-        <PWAInstallPrompt />
-        <CartDrawer />
-        <Router />
-        <BottomNavigation />
+        <div className="min-h-screen bg-gradient-to-br from-nature-light via-white to-sage-light">
+          <Header />
+          <PWAInstallPrompt />
+          <CartDrawer />
+          <Router>
+            <div>
+              <Route path="/" component={Home} />
+              <Route path="/products" component={Products} />
+              <Route path="/products/:id" component={Products} />
+              <Route path="/account" component={LazyAccount} />
+              <Route path="/checkout" component={LazyCheckout} />
+              <Route path="/distributor" component={LazyDistributor} />
+              <Route path="/:rest*" component={NotFound} />
+            </div>
+          </Router>
+          <BottomNavigation />
+        </div>
       </QueryClientProvider>
     </ErrorBoundary>
   );
