@@ -1,76 +1,65 @@
 /**
- * Netlify Serverless Function: Products API
+ * Netlify Function: Products API
  * 
- * Handles all product-related API endpoints:
- * - GET /api/products - List products with filtering
- * - GET /api/products/:id - Get single product
- * 
- * This function replaces the Express.js routes for Netlify deployment.
+ * Handles product-related requests:
+ * - GET /api/products - List all products with optional filtering
+ * - GET /api/products?category=slug - Filter by category
+ * - GET /api/products?featured=true - Get featured products
+ * - GET /api/products?search=query - Search products
+ * - GET /api/products/:id - Get single product (handled via path parameters)
  */
 
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { storage } from '../../server/storage';
 
-interface ProductQuery {
-  category?: string;
-  search?: string;
-  featured?: string;
-}
-
-/**
- * Parse product ID from URL path
- * Extracts ID from paths like /.netlify/functions/products/123
- */
-function parseProductId(path: string): number | null {
-  const segments = path.split('/');
-  const lastSegment = segments[segments.length - 1];
-  
-  // Check if last segment is numeric
-  if (lastSegment && /^\d+$/.test(lastSegment)) {
-    return parseInt(lastSegment, 10);
-  }
-  
-  return null;
-}
-
-/**
- * Main handler function for products API
- */
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   console.log(`[NETLIFY] ${event.httpMethod} ${event.path}`);
-  
+
   // CORS preflight handling
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
       body: '',
     };
   }
-  
+
+  if (event.httpMethod !== 'GET') {
+    return {
+      statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
+  }
+
   try {
-    const productId = parseProductId(event.path);
-    
+    const queryStringParameters = event.queryStringParameters || {};
+    const { category, featured, search, id } = queryStringParameters;
+
+    let products;
+
     // Handle single product request
-    if (productId) {
-      if (event.httpMethod !== 'GET') {
+    if (id) {
+      const productId = parseInt(id, 10);
+      if (isNaN(productId)) {
         return {
-          statusCode: 405,
+          statusCode: 400,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ error: 'Method not allowed' }),
+          body: JSON.stringify({ error: 'Invalid product ID' }),
         };
       }
-      
-      console.log(`[NETLIFY] Fetching product ${productId}`);
+
       const product = await storage.getProduct(productId);
-      
       if (!product) {
         return {
           statusCode: 404,
@@ -81,67 +70,55 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
           body: JSON.stringify({ error: 'Product not found' }),
         };
       }
-      
+
+      console.log(`[NETLIFY] Returning product: ${product.id}`);
       return {
         statusCode: 200,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300', // 5 minutes cache
+          'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
         },
         body: JSON.stringify(product),
       };
     }
-    
-    // Handle products list request
-    if (event.httpMethod === 'GET') {
-      const query: ProductQuery = event.queryStringParameters || {};
-      const { category, search, featured } = query;
-      
-      console.log('[NETLIFY] Products query:', { category, search, featured });
-      
-      let products;
-      
-      if (category) {
-        console.log(`[NETLIFY] Filtering by category: ${category}`);
-        products = await storage.getProductsByCategory(category);
-      } else if (search) {
-        console.log(`[NETLIFY] Searching for: ${search}`);
-        products = await storage.searchProducts(search);
-      } else if (featured === 'true') {
-        console.log('[NETLIFY] Fetching featured products');
-        products = await storage.getFeaturedProducts();
-      } else {
-        console.log('[NETLIFY] Fetching all products');
-        products = await storage.getProducts();
-      }
-      
-      console.log(`[NETLIFY] Returning ${products.length} products`);
-      
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300', // 5 minutes cache
-        },
-        body: JSON.stringify(products),
-      };
+
+    // Handle search request
+    if (search) {
+      console.log(`[NETLIFY] Searching products: ${search}`);
+      products = await storage.searchProducts(search);
     }
-    
-    // Method not allowed
+    // Handle featured products request
+    else if (featured === 'true') {
+      console.log('[NETLIFY] Fetching featured products');
+      products = await storage.getFeaturedProducts();
+    }
+    // Handle category filter
+    else if (category) {
+      console.log(`[NETLIFY] Fetching products by category: ${category}`);
+      products = await storage.getProductsByCategory(category);
+    }
+    // Handle all products request
+    else {
+      console.log('[NETLIFY] Fetching all products');
+      products = await storage.getProducts();
+    }
+
+    console.log(`[NETLIFY] Returning ${products.length} products`);
+
     return {
-      statusCode: 405,
+      statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
       },
-      body: JSON.stringify({ error: 'Method not allowed' }),
+      body: JSON.stringify(products),
     };
-    
+
   } catch (error) {
-    console.error('[NETLIFY] Products API error:', error);
-    
+    console.error('[NETLIFY] Products error:', error);
+
     return {
       statusCode: 500,
       headers: {

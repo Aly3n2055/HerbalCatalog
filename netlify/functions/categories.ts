@@ -1,28 +1,14 @@
+
 /**
- * Netlify Serverless Function: Categories API
+ * Netlify Function: Categories API
  * 
- * Handles category-related API endpoints:
+ * Handles category-related requests:
  * - GET /api/categories - List all categories
- * - GET /api/categories/:slug - Get single category by slug
+ * - GET /api/categories?slug=category-slug - Get single category
  */
 
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { storage } from '../../server/storage';
-
-/**
- * Parse category slug from URL path
- */
-function parseCategorySlug(path: string): string | null {
-  const segments = path.split('/');
-  const lastSegment = segments[segments.length - 1];
-  
-  // Check if last segment is not 'categories' (meaning it's a slug)
-  if (lastSegment && lastSegment !== 'categories') {
-    return lastSegment;
-  }
-  
-  return null;
-}
 
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   console.log(`[NETLIFY] ${event.httpMethod} ${event.path}`);
@@ -52,12 +38,13 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
   }
   
   try {
-    const categorySlug = parseCategorySlug(event.path);
+    const queryStringParameters = event.queryStringParameters || {};
+    const { slug } = queryStringParameters;
     
     // Handle single category request
-    if (categorySlug) {
-      console.log(`[NETLIFY] Fetching category: ${categorySlug}`);
-      const category = await storage.getCategory(categorySlug);
+    if (slug) {
+      console.log(`[NETLIFY] Fetching category: ${slug}`);
+      const category = await storage.getCategory(slug);
       
       if (!category) {
         return {
@@ -70,18 +57,19 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         };
       }
       
+      console.log(`[NETLIFY] Returning category: ${category.name}`);
       return {
         statusCode: 200,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=600', // 10 minutes cache
+          'Cache-Control': 'public, max-age=600', // Cache for 10 minutes
         },
         body: JSON.stringify(category),
       };
     }
     
-    // Handle categories list request
+    // Handle all categories request
     console.log('[NETLIFY] Fetching all categories');
     const categories = await storage.getCategories();
     
@@ -92,13 +80,13 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=600', // 10 minutes cache
+        'Cache-Control': 'public, max-age=600', // Cache for 10 minutes
       },
       body: JSON.stringify(categories),
     };
     
   } catch (error) {
-    console.error('[NETLIFY] Categories API error:', error);
+    console.error('[NETLIFY] Categories error:', error);
     
     return {
       statusCode: 500,

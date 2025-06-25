@@ -1,14 +1,12 @@
+
 /**
- * Netlify Serverless Function: User Registration
- * 
- * Handles user registration with password hashing and validation.
- * Note: Session management in serverless functions requires external session store.
+ * Netlify Function: User Registration
  */
 
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
-import bcrypt from 'bcrypt';
 import { registerSchema } from '../../shared/schema';
 import { storage } from '../../server/storage';
+import bcrypt from 'bcrypt';
 
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   console.log(`[NETLIFY] ${event.httpMethod} ${event.path}`);
@@ -50,7 +48,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     }
     
     const requestBody = JSON.parse(event.body);
-    console.log('[NETLIFY] Registration attempt for:', requestBody.email);
+    console.log('[NETLIFY] Registration attempt:', requestBody.email);
     
     // Validate request body
     const validationResult = registerSchema.safeParse(requestBody);
@@ -68,7 +66,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
       };
     }
     
-    const { email, password, firstName, lastName } = validationResult.data;
+    const { email, password, username, firstName, lastName, phone } = validationResult.data;
     
     // Check if user already exists
     const existingUser = await storage.getUserByEmail(email);
@@ -79,26 +77,31 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Email already registered' }),
+        body: JSON.stringify({ 
+          error: 'User already exists',
+          message: 'An account with this email already exists'
+        }),
       };
     }
     
     // Hash password
-    const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, 10);
     
     // Create user
     const user = await storage.createUser({
       email,
-      passwordHash,
+      password: hashedPassword,
+      username,
       firstName,
       lastName,
+      phone,
+      role: 'customer'
     });
     
-    // Return user data (excluding password hash)
-    const { passwordHash: _, ...userResponse } = user;
+    console.log(`[NETLIFY] User created: ${user.id} (${user.email})`);
     
-    console.log(`[NETLIFY] User registered successfully: ${user.id}`);
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
     
     return {
       statusCode: 201,
@@ -106,7 +109,11 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userResponse),
+      body: JSON.stringify({
+        success: true,
+        user: userWithoutPassword,
+        message: 'Registration successful'
+      }),
     };
     
   } catch (error) {
@@ -118,7 +125,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ error: 'Registration failed' }),
+      body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
 };

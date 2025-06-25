@@ -1,14 +1,12 @@
+
 /**
- * Netlify Serverless Function: User Login
- * 
- * Handles user authentication with password verification.
- * For production deployment, consider using JWT tokens instead of sessions.
+ * Netlify Function: User Login
  */
 
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
-import bcrypt from 'bcrypt';
 import { loginSchema } from '../../shared/schema';
 import { storage } from '../../server/storage';
+import bcrypt from 'bcrypt';
 
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
   console.log(`[NETLIFY] ${event.httpMethod} ${event.path}`);
@@ -50,7 +48,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     }
     
     const requestBody = JSON.parse(event.body);
-    console.log('[NETLIFY] Login attempt for:', requestBody.email);
+    console.log('[NETLIFY] Login attempt:', requestBody.email);
     
     // Validate request body
     const validationResult = loginSchema.safeParse(requestBody);
@@ -70,7 +68,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     
     const { email, password } = validationResult.data;
     
-    // Find user by email
+    // Find user
     const user = await storage.getUserByEmail(email);
     if (!user) {
       return {
@@ -79,30 +77,34 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Invalid credentials' }),
+        body: JSON.stringify({ 
+          error: 'Invalid credentials',
+          message: 'Email or password is incorrect'
+        }),
       };
     }
     
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isPasswordValid) {
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
       return {
         statusCode: 401,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ error: 'Invalid credentials' }),
+        body: JSON.stringify({ 
+          error: 'Invalid credentials',
+          message: 'Email or password is incorrect'
+        }),
       };
     }
     
-    // Return user data (excluding password hash)
-    const { passwordHash: _, ...userResponse } = user;
+    console.log(`[NETLIFY] Login successful: ${user.id} (${user.email})`);
     
-    console.log(`[NETLIFY] User logged in successfully: ${user.id}`);
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
     
-    // Note: In a real serverless deployment, you would generate and return a JWT token here
-    // For now, returning user data for compatibility with existing frontend
     return {
       statusCode: 200,
       headers: {
@@ -110,9 +112,9 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        user: userResponse,
-        // In production, include JWT token:
-        // token: generateJWT(user.id)
+        success: true,
+        user: userWithoutPassword,
+        message: 'Login successful'
       }),
     };
     
@@ -125,7 +127,7 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ error: 'Login failed' }),
+      body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
 };
