@@ -1,8 +1,4 @@
 
-/**
- * Netlify Function: Check Username Availability
- */
-
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { storage } from '../../server/storage';
 
@@ -34,9 +30,9 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
   }
   
   try {
-    const username = event.queryStringParameters?.username;
+    const { username } = event.queryStringParameters || {};
     
-    if (!username) {
+    if (!username || typeof username !== 'string') {
       return {
         statusCode: 400,
         headers: {
@@ -46,6 +42,8 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         body: JSON.stringify({ error: 'Username parameter is required' }),
       };
     }
+    
+    console.log('[NETLIFY] Checking username availability:', username);
     
     // Basic validation
     if (username.length < 3 || username.length > 20) {

@@ -26,7 +26,7 @@ export interface RegisterData {
 export const authService = {
   // Login user
   async login(credentials: LoginCredentials): Promise<User> {
-    const response = await apiClient.post<{ success: boolean; user: User; message: string }>('/auth-login', credentials);
+    const response = await apiClient.post<{ success: boolean; user: User; message: string }>('/.netlify/functions/auth-login', credentials);
     if (response.success && response.user) {
       return response.user;
     }
@@ -35,7 +35,7 @@ export const authService = {
 
   // Register new user
   async register(userData: RegisterData): Promise<User> {
-    const response = await apiClient.post<{ success: boolean; user: User; message: string }>('/auth-register', userData);
+    const response = await apiClient.post<{ success: boolean; user: User; message: string }>('/.netlify/functions/auth-register', userData);
     if (response.success && response.user) {
       return response.user;
     }

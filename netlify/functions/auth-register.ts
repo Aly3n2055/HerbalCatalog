@@ -68,9 +68,9 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     
     const { email, password, username, firstName, lastName, phone } = validationResult.data;
     
-    // Check if user already exists
-    const existingUser = await storage.getUserByEmail(email);
-    if (existingUser) {
+    // Check if user already exists by email
+    const existingUserByEmail = await storage.getUserByEmail(email);
+    if (existingUserByEmail) {
       return {
         statusCode: 409,
         headers: {
@@ -80,6 +80,22 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         body: JSON.stringify({ 
           error: 'User already exists',
           message: 'An account with this email already exists'
+        }),
+      };
+    }
+    
+    // Check if username already exists
+    const existingUserByUsername = await storage.getUserByUsername(username);
+    if (existingUserByUsername) {
+      return {
+        statusCode: 409,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          error: 'Username taken',
+          message: 'This username is already taken'
         }),
       };
     }

@@ -19,8 +19,16 @@ export function useAuth(): UseAuthReturn {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      const response = await apiRequest("POST", "/api/login", data);
-      return await response.json();
+      const response = await fetch('/.netlify/functions/auth-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Login failed');
+      }
+      return result.user;
     },
     onSuccess: (userData) => {
       setUser(userData);
@@ -40,8 +48,16 @@ export function useAuth(): UseAuthReturn {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      const response = await apiRequest("POST", "/api/register", data);
-      return await response.json();
+      const response = await fetch('/.netlify/functions/auth-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Registration failed');
+      }
+      return result.user;
     },
     onSuccess: (userData) => {
       setUser(userData);
