@@ -1,6 +1,5 @@
 
-import { useState, memo, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, memo, useMemo, useCallback, Suspense } from "react";
 import { useParams } from "wouter";
 import ProductCard from "@/components/product-card";
 import CategoryCard from "@/components/category-card";
@@ -9,42 +8,30 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductCardSkeleton, CategoryCardSkeleton } from "@/components/ui/skeleton";
-import { Search, Filter } from "lucide-react";
-import { Product, Category } from "@shared/schema";
+import { Search } from "lucide-react";
+import { Product } from "@shared/schema";
+import { useProducts, useCategories } from "@/hooks/use-products";
 
 const Products = memo(() => {
   const { category: categorySlug } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
 
-  const { data: categories = [] } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
-    queryFn: async () => {
-      const response = await fetch("/api/categories");
-      if (!response.ok) throw new Error("Failed to fetch categories");
-      return response.json();
-    },
-  });
-
-  const apiUrl = categorySlug
-    ? `/api/products?category=${categorySlug}`
-    : searchQuery
-    ? `/api/products?search=${searchQuery}`
-    : "/api/products";
-
-  const { data: products = [], isLoading } = useQuery<Product[]>({
-    queryKey: [apiUrl],
-    queryFn: async () => {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error("Failed to fetch products");
-      return response.json();
-    },
-  });
+  const { data: categories = [] } = useCategories();
+  const { data: products = [], isLoading } = useProducts(searchQuery, categorySlug);
 
   const selectedCategory = useMemo(() => 
     categories.find(cat => cat.slug === categorySlug), 
     [categories, categorySlug]
   );
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const clearSearch = useCallback(() => {
+    setSearchQuery("");
+  }, []);
 
   const sortedProducts = useMemo(() => {
     if (!products.length) return [];
@@ -104,7 +91,7 @@ const Products = memo(() => {
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 className="pl-10"
               />
             </div>
@@ -137,7 +124,7 @@ const Products = memo(() => {
                 </p>
                 {searchQuery && (
                   <Button
-                    onClick={() => setSearchQuery("")}
+                    onClick={clearSearch}
                     className="bg-nature-green hover:bg-forest-green"
                   >
                     Clear Search

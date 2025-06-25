@@ -1,76 +1,75 @@
-import { useQuery } from '@tanstack/react-query';
-import { productService } from '../services/products';
-import type { Product, Category } from "@shared/schema";
 
-// Query key factory
-export const productKeys = {
-  all: ['products'] as const,
-  lists: () => [...productKeys.all, 'list'] as const,
-  list: (filters: Record<string, unknown>) => [...productKeys.lists(), { filters }] as const,
-  details: () => [...productKeys.all, 'detail'] as const,
-  detail: (id: string) => [...productKeys.details(), id] as const,
-};
+import { useQuery } from "@tanstack/react-query";
+import { Product, Category } from "@shared/schema";
 
-export const categoryKeys = {
-  all: ['categories'] as const,
-  lists: () => [...categoryKeys.all, 'list'] as const,
-};
-
-export function useProducts(params?: {
-  category?: string;
-  featured?: boolean;
-  search?: string;
-}) {
-  return useQuery<Product[]>({
-    queryKey: productKeys.list(params || {}),
-    queryFn: async () => {
-      const response = await productService.getProducts(params);
-      if (!response) {
-        const error = new Error(`Failed to fetch products`);
-        console.error('Products fetch error:', error);
-        throw error;
+// Optimized fetch with better error handling
+const fetchWithTimeout = async (url: string, timeout = 8000) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, { 
+      signal: controller.signal,
+      headers: {
+        'Cache-Control': 'max-age=300' // 5 minute cache
       }
-      return response;
-    },
+    });
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+};
+
+export const useProducts = (searchQuery?: string, categorySlug?: string) => {
+  let apiUrl = "/api/products";
+  
+  if (categorySlug) {
+    apiUrl += `?category=${encodeURIComponent(categorySlug)}`;
+  } else if (searchQuery?.trim()) {
+    apiUrl += `?search=${encodeURIComponent(searchQuery.trim())}`;
+  }
+
+  return useQuery<Product[]>({
+    queryKey: ['products', categorySlug, searchQuery],
+    queryFn: () => fetchWithTimeout(apiUrl),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     retry: 2,
-    retryDelay: 1000,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
-}
+};
 
-export function useFeaturedProducts() {
-  return useQuery({
-    queryKey: productKeys.list({ featured: true }),
-    queryFn: () => productService.getProducts({ featured: true }),
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-export function useCategories() {
+export const useCategories = () => {
   return useQuery<Category[]>({
-    queryKey: categoryKeys.lists(),
-    queryFn: async () => {
-      const response = await productService.getCategories();
-      if (!response) {
-        const error = new Error(`Failed to fetch categories`);
-        console.error('Categories fetch error:', error);
-        throw error;
-      }
-      return response;
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    queryKey: ['categories'],
+    queryFn: () => fetchWithTimeout("/api/categories"),
+    staleTime: 15 * 60 * 1000, // 15 minutes - categories don't change often
+    gcTime: 30 * 60 * 1000, // 30 minutes
     retry: 2,
-    retryDelay: 1000,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
-}
+};
 
-export function useProduct(id: string) {
-  return useQuery({
-    queryKey: productKeys.detail(id),
-    queryFn: () => productService.getProduct(id),
+export const useProduct = (id: string) => {
+  return useQuery<Product>({
+    queryKey: ['product', id],
+    queryFn: () => fetchWithTimeout(`/api/products/${id}`),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 20 * 60 * 1000, // 20 minutes
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     enabled: !!id,
-    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
-}
+};
