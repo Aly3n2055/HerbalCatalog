@@ -442,6 +442,7 @@ export class DatabaseStorage implements IStorage {
 
   // Product Operations
   async getProducts(): Promise<Product[]> {
+    if (!db) throw new Error('Database not connected');
     console.log('[DB] Getting all products');
     return await db.select().from(products).orderBy(desc(products.featured), products.name);
   }
@@ -518,6 +519,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async addToCart(item: InsertCartItem): Promise<CartItem> {
+    if (!db) throw new Error('Database not connected');
     console.log(`[DB] Adding to cart: user ${item.userId}, product ${item.productId}`);
 
     // Check if item already exists
@@ -525,15 +527,15 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(cartItems)
       .where(and(
-        eq(cartItems.userId, item.userId),
-        eq(cartItems.productId, item.productId)
+        eq(cartItems.userId, item.userId!),
+        eq(cartItems.productId, item.productId!)
       ));
 
     if (existingItem) {
       // Update quantity
       const [updatedItem] = await db
         .update(cartItems)
-        .set({ quantity: existingItem.quantity + item.quantity })
+        .set({ quantity: (existingItem.quantity || 0) + (item.quantity || 1) })
         .where(eq(cartItems.id, existingItem.id))
         .returning();
       return updatedItem;

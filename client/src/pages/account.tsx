@@ -216,7 +216,6 @@ export default function Account() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
       <CartDrawer />
 
       <div className="px-4 py-6">
@@ -312,6 +311,7 @@ export default function Account() {
                               <Input
                                 placeholder="First name"
                                 {...field}
+                                value={field.value || ""}
                                 className="touch-feedback"
                               />
                             </FormControl>
@@ -330,6 +330,7 @@ export default function Account() {
                               <Input
                                 placeholder="Last name"
                                 {...field}
+                                value={field.value || ""}
                                 className="touch-feedback"
                               />
                             </FormControl>
@@ -387,6 +388,8 @@ export default function Account() {
                               type="tel"
                               placeholder="Your phone number"
                               {...field}
+                              value={field.value || ""}
+                              onChange={field.onChange}
                               className="touch-feedback"
                             />
                           </FormControl>
