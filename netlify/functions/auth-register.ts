@@ -1,119 +1,147 @@
-import { Handler } from '@netlify/functions';
-import { neon } from '@neondatabase/serverless';
-import bcrypt from 'bcryptjs';
+
+/**
+ * Netlify Function: User Registration
+ */
+
+import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { registerSchema } from '../../shared/schema';
+import { storage } from '../../server/storage';
+import bcrypt from 'bcrypt';
 
-const sql = neon(process.env.DATABASE_URL!);
-
-export const handler: Handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      },
-      body: JSON.stringify({ message: 'Method not allowed' }),
-    };
-  }
-
+export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+  console.log(`[NETLIFY] ${event.httpMethod} ${event.path}`);
+  
+  // CORS preflight handling
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       },
       body: '',
     };
   }
-
+  
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
+  }
+  
   try {
-    const body = JSON.parse(event.body || '{}');
-    console.log('Registration attempt for:', body.email, body.username);
-
-    // Validate input
-    const validatedData = registerSchema.parse(body);
-
-    // Check if user already exists
-    const existingUser = await sql`
-      SELECT id FROM users WHERE email = ${validatedData.email} OR username = ${validatedData.username}
-    `;
-
-    if (existingUser.length > 0) {
+    if (!event.body) {
       return {
         statusCode: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          success: false,
-          message: 'User with this email or username already exists',
+        body: JSON.stringify({ error: 'Request body is required' }),
+      };
+    }
+    
+    const requestBody = JSON.parse(event.body);
+    console.log('[NETLIFY] Registration attempt:', requestBody.email);
+    
+    // Validate request body
+    const validationResult = registerSchema.safeParse(requestBody);
+    if (!validationResult.success) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          error: 'Validation failed',
+          issues: validationResult.error.issues 
         }),
       };
     }
-
+    
+    const { email, password, username, firstName, lastName, phone } = validationResult.data;
+    
+    // Check if user already exists by email
+    const existingUserByEmail = await storage.getUserByEmail(email);
+    if (existingUserByEmail) {
+      return {
+        statusCode: 409,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          error: 'User already exists',
+          message: 'An account with this email already exists'
+        }),
+      };
+    }
+    
+    // Check if username already exists
+    const existingUserByUsername = await storage.getUserByUsername(username);
+    if (existingUserByUsername) {
+      return {
+        statusCode: 409,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          error: 'Username taken',
+          message: 'This username is already taken'
+        }),
+      };
+    }
+    
     // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
-
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
     // Create user
-    const [newUser] = await sql`
-      INSERT INTO users (email, username, password_hash, first_name, last_name, phone, role)
-      VALUES (
-        ${validatedData.email},
-        ${validatedData.username},
-        ${hashedPassword},
-        ${validatedData.firstName || null},
-        ${validatedData.lastName || null},
-        ${validatedData.phone || null},
-        ${validatedData.role || 'customer'}
-      )
-      RETURNING id, email, username, first_name, last_name, phone, role, created_at, updated_at
-    `;
-
-    // Format user data for response
-    const userData = {
-      id: newUser.id,
-      email: newUser.email,
-      username: newUser.username,
-      firstName: newUser.first_name,
-      lastName: newUser.last_name,
-      phone: newUser.phone,
-      role: newUser.role,
-      createdAt: newUser.created_at,
-      updatedAt: newUser.updated_at,
-    };
-
-    console.log('User registered successfully:', userData.id);
-
+    const user = await storage.createUser({
+      email,
+      password: hashedPassword,
+      username,
+      firstName,
+      lastName,
+      phone,
+      role: 'customer'
+    });
+    
+    console.log(`[NETLIFY] User created: ${user.id} (${user.email})`);
+    
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    
     return {
       statusCode: 201,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         success: true,
-        user: userData,
-        message: 'Registration successful',
+        user: userWithoutPassword,
+        message: 'Registration successful'
       }),
     };
-  } catch (error: any) {
-    console.error('Registration error:', error);
-
+    
+  } catch (error) {
+    console.error('[NETLIFY] Registration error:', error);
+    
     return {
-      statusCode: 400,
+      statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        success: false,
-        message: error.message || 'Registration failed',
-      }),
+      body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
 };
