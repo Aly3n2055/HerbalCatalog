@@ -16,7 +16,7 @@ export function useAuth(): UseAuthReturn {
   const { user, isLoading, setUser, setLoading, logout: logoutStore } = useAuthStore();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
       const response = await apiRequest("POST", "/api/login", data);
@@ -78,10 +78,12 @@ export function useAuth(): UseAuthReturn {
     }
   };
 
-  const register = async (data: RegisterData) => {
+  const register = async (userData: RegisterData) => {
     setLoading(true);
     try {
-      await registerMutation.mutateAsync(data);
+      // Remove confirmPassword before sending to API
+      const { confirmPassword, ...apiData } = userData;
+      await registerMutation.mutateAsync(apiData);
       toast({
         title: "Account created!",
         description: "Welcome to NatureVital. You're now logged in.",

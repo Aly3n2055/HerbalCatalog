@@ -1,4 +1,3 @@
-
 export const API_BASE_URL = '/api';
 
 // Base API client with error handling
@@ -8,7 +7,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     try {
       const response = await fetch(url, {
         headers: {

@@ -60,14 +60,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Username availability check
+  app.get("/api/check-username", async (req, res) => {
+    try {
+      const { username } = req.query;
+      
+      if (!username || typeof username !== 'string') {
+        return res.status(400).json({ error: 'Username parameter is required' });
+      }
+      
+      // Basic validation
+      if (username.length < 3 || username.length > 20) {
+        return res.json({ 
+          available: false,
+          reason: 'Username must be between 3 and 20 characters'
+        });
+      }
+      
+      if (!/^[a-z0-9_]+$/.test(username)) {
+        return res.json({ 
+          available: false,
+          reason: 'Username can only contain lowercase letters, numbers, and underscores'
+        });
+      }
+      
+      if (!/^[a-z]/.test(username)) {
+        return res.json({ 
+          available: false,
+          reason: 'Username must start with a letter'
+        });
+      }
+      
+      // Check reserved usernames
+      const reserved = [
+        'admin', 'administrator', 'root', 'api', 'www', 'mail', 'email',
+        'support', 'help', 'info', 'contact', 'sales', 'marketing',
+        'system', 'user', 'users', 'account', 'accounts', 'profile',
+        'settings', 'config', 'test', 'demo', 'sample', 'null', 'undefined'
+      ];
+      
+      if (reserved.includes(username)) {
+        return res.json({ 
+          available: false,
+          reason: 'This username is reserved'
+        });
+      }
+      
+      // Check if username exists in database
+      const existingUser = await storage.getUserByUsername(username);
+      
+      res.json({ 
+        available: !existingUser,
+        reason: existingUser ? 'Username is already taken' : undefined
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Auth routes
   app.post("/api/register", async (req, res) => {
     try {
       const userData = registerSchema.parse(req.body);
-      const existingUser = await storage.getUserByEmail(userData.email);
+      const existingUserByEmail = await storage.getUserByEmail(userData.email);
+      const existingUserByUsername = await storage.getUserByUsername(userData.username);
       
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
+      if (existingUserByEmail) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+      
+      if (existingUserByUsername) {
+        return res.status(400).json({ message: "Username is already taken" });
       }
 
       const hashedPassword = await bcrypt.hash(userData.password, 10);
