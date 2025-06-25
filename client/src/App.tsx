@@ -1,4 +1,4 @@
-import { Routes, Route } from 'wouter';
+import { Switch, Route } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Suspense, lazy } from 'react';
 import { Toaster } from '@/components/ui/toaster';
@@ -20,7 +20,7 @@ const LazyDistributor = lazy(() => import('@/pages/distributor'));
 
 function Router() {
   return (
-    <Routes>
+    <Switch>
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
       <Route path="/products/:id">
@@ -52,7 +52,7 @@ function Router() {
         )}
       </Route>
       <Route component={NotFound} />
-    </Routes>
+    </Switch>
   );
 }
 
@@ -61,7 +61,6 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <Toaster />
         <Header />
         <PWAInstallPrompt />
         <CartDrawer />
