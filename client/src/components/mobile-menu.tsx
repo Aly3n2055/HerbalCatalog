@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { X, Leaf, Info, Handshake, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 
 interface MobileMenuProps {
@@ -23,6 +23,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <SheetTitle className="text-xl font-bold text-nature-green">
             Menu
           </SheetTitle>
+          <SheetDescription className="sr-only">
+            Navigate through the main sections of NatureVital including products, partnerships, and account management.
+          </SheetDescription>
         </SheetHeader>
         
         <div className="mt-6 space-y-4">

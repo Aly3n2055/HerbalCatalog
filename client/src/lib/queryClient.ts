@@ -21,19 +21,24 @@ export const queryClient = new QueryClient({
 });
 
 // Define and export the apiRequest function
-export const apiRequest = async (url: string, options: RequestInit = {}) => {
-  const response = await fetch(url, {
+export const apiRequest = async (method: string, url: string, data?: any) => {
+  const options: RequestInit = {
+    method,
     headers: {
       'Content-Type': 'application/json',
-      ...options.headers,
     },
-    ...options,
-  });
+  };
+
+  if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(url, options);
   
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`HTTP ${response.status}: ${errorText || 'Network response was not ok'}`);
   }
   
-  return response.json();
+  return response;
 };

@@ -40,7 +40,7 @@ function App() {
             <Switch>
               <Route path="/" component={Home} />
               <Route path="/products" component={Products} />
-              <Route path="/products/:id" component={LazyProductDetail} />
+              <Route path="/product/:id" component={LazyProductDetail} />
               <Route path="/checkout" component={LazyCheckout} />
               <Route path="/account" component={LazyAccount} />
               <Route path="/distributor" component={LazyDistributor} />

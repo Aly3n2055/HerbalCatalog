@@ -19,10 +19,8 @@ export function useAuth(): UseAuthReturn {
   
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      return await apiRequest("/api/login", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const response = await apiRequest("POST", "/api/login", data);
+      return await response.json();
     },
     onSuccess: (userData) => {
       setUser(userData);
@@ -42,10 +40,8 @@ export function useAuth(): UseAuthReturn {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      return await apiRequest("/api/register", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const response = await apiRequest("POST", "/api/register", data);
+      return await response.json();
     },
     onSuccess: (userData) => {
       setUser(userData);
