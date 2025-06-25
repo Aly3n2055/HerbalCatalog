@@ -59,10 +59,31 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
         };
       }
       
+      // Check for duplicate applications (optional enhancement)
+      try {
+        const existingLead = await storage.getDistributorLeadByEmail?.(validationResult.data.email);
+        if (existingLead) {
+          return {
+            statusCode: 409,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              error: 'Application already exists for this email address',
+              message: 'You have already submitted an application. Our team will contact you soon.'
+            }),
+          };
+        }
+      } catch (error) {
+        // If method doesn't exist, continue with creation
+        console.log('[NETLIFY] Duplicate check method not available, proceeding with creation');
+      }
+      
       // Create distributor lead
       const lead = await storage.createDistributorLead(validationResult.data);
       
-      console.log(`[NETLIFY] Distributor lead created: ${lead.id}`);
+      console.log(`[NETLIFY] Distributor lead created: ${lead.id} for ${validationResult.data.email}`);
       
       return {
         statusCode: 201,
@@ -70,7 +91,11 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(lead),
+        body: JSON.stringify({
+          success: true,
+          data: lead,
+          message: 'Application submitted successfully'
+        }),
       };
     }
     
