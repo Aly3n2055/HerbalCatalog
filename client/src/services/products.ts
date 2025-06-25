@@ -1,63 +1,64 @@
-import { apiClient } from './api';
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  price: number;
-  imageUrl: string;
+  price: string;
+  image: string;
   category: string;
-  inStock: boolean;
   featured?: boolean;
+  stock?: number;
 }
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
-  description: string;
+  slug: string;
+  description?: string;
 }
 
-export const productService = {
-  // Get all products with optional filters
+class ProductService {
+  private baseUrl = '/api';
+
   async getProducts(params?: {
     category?: string;
     featured?: boolean;
     search?: string;
-  }): Promise<Product[]> {
+  }) {
     const searchParams = new URLSearchParams();
-
+    
     if (params?.category) searchParams.set('category', params.category);
     if (params?.featured) searchParams.set('featured', 'true');
     if (params?.search) searchParams.set('search', params.search);
 
-    const query = searchParams.toString();
-    const endpoint = query ? `/products?${query}` : '/products';
+    const url = `${this.baseUrl}/products${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    return response.json();
+  }
 
-    return apiClient.get<Product[]>(endpoint);
-  },
+  async getProduct(id: string) {
+    const response = await fetch(`${this.baseUrl}/products/${id}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch product');
+    }
+    return response.json();
+  }
 
-  // Get single product by ID
-  async getProduct(id: number): Promise<Product> {
-    return apiClient.get<Product>(`/products/${id}`);
-  },
+  async getCategories() {
+    const response = await fetch(`${this.baseUrl}/categories`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+    return response.json();
+  }
 
-  // Get featured products
-  async getFeaturedProducts(): Promise<Product[]> {
-    return this.getProducts({ featured: true });
-  },
-
-  // Search products
-  async searchProducts(query: string): Promise<Product[]> {
+  async searchProducts(query: string) {
     return this.getProducts({ search: query });
-  },
+  }
+}
 
-  // Get products by category
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    return this.getProducts({ category });
-  },
-
-  // Get all categories
-  async getCategories(): Promise<Category[]> {
-    return apiClient.get<Category[]>('/categories');
-  },
-};
+export const productService = new ProductService();

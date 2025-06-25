@@ -1,3 +1,4 @@
+
 import { Switch, Route } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Suspense, lazy } from 'react';
@@ -18,46 +19,18 @@ const LazyCheckout = lazy(() => import('@/pages/checkout'));
 const LazyAccount = lazy(() => import('@/pages/account'));
 const LazyDistributor = lazy(() => import('@/pages/distributor'));
 
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/products" component={Products} />
-      <Route path="/products/:id">
-        {(params) => (
-          <Suspense fallback={<div className="flex items-center justify-center p-8">Loading product...</div>}>
-            <LazyProductDetail {...params} />
-          </Suspense>
-        )}
-      </Route>
-      <Route path="/checkout">
-        {() => (
-          <Suspense fallback={<div className="flex items-center justify-center p-8">Loading checkout...</div>}>
-            <LazyCheckout />
-          </Suspense>
-        )}
-      </Route>
-      <Route path="/account">
-        {() => (
-          <Suspense fallback={<div className="flex items-center justify-center p-8">Loading account...</div>}>
-            <LazyAccount />
-          </Suspense>
-        )}
-      </Route>
-      <Route path="/distributor">
-        {() => (
-          <Suspense fallback={<div className="flex items-center justify-center p-8">Loading distributor info...</div>}>
-            <LazyDistributor />
-          </Suspense>
-        )}
-      </Route>
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        gcTime: 10 * 60 * 1000, // 10 minutes
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -66,17 +39,41 @@ function App() {
           <Header />
           <PWAInstallPrompt />
           <CartDrawer />
-          <Router>
-            <div>
-              <Route path="/" component={Home} />
-              <Route path="/products" component={Products} />
-              <Route path="/products/:id" component={Products} />
-              <Route path="/account" component={LazyAccount} />
-              <Route path="/checkout" component={LazyCheckout} />
-              <Route path="/distributor" component={LazyDistributor} />
-              <Route path="/:rest*" component={NotFound} />
-            </div>
-          </Router>
+          
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/products" component={Products} />
+            <Route path="/products/:id">
+              {(params) => (
+                <Suspense fallback={<div className="flex items-center justify-center p-8">Loading product...</div>}>
+                  <LazyProductDetail {...params} />
+                </Suspense>
+              )}
+            </Route>
+            <Route path="/checkout">
+              {() => (
+                <Suspense fallback={<div className="flex items-center justify-center p-8">Loading checkout...</div>}>
+                  <LazyCheckout />
+                </Suspense>
+              )}
+            </Route>
+            <Route path="/account">
+              {() => (
+                <Suspense fallback={<div className="flex items-center justify-center p-8">Loading account...</div>}>
+                  <LazyAccount />
+                </Suspense>
+              )}
+            </Route>
+            <Route path="/distributor">
+              {() => (
+                <Suspense fallback={<div className="flex items-center justify-center p-8">Loading distributor info...</div>}>
+                  <LazyDistributor />
+                </Suspense>
+              )}
+            </Route>
+            <Route component={NotFound} />
+          </Switch>
+          
           <BottomNavigation />
         </div>
       </QueryClientProvider>

@@ -23,7 +23,7 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-stone-50 pt-16">
       <PWAInstallPrompt />
       <Header />
       <CartDrawer />
@@ -36,7 +36,7 @@ export default function Home() {
           alt="Wellness lifestyle with natural herbs"
           className="w-full h-full object-cover"
         />
-        
+
         <div className="absolute inset-0 z-20 flex items-center">
           <div className="px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-2xl">
@@ -70,7 +70,7 @@ export default function Home() {
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">Shop by Category</h2>
-          
+
           {categoriesLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[...Array(4)].map((_, i) => (
@@ -98,7 +98,7 @@ export default function Home() {
               </Button>
             </Link>
           </div>
-          
+
           {productsLoading ? (
             <div className="flex space-x-3 sm:space-x-4 overflow-x-auto hide-scrollbar pb-4">
               {[...Array(3)].map((_, i) => (
@@ -128,7 +128,7 @@ export default function Home() {
           <p className="text-lg text-white mb-8 font-medium drop-shadow-md leading-relaxed">
             Become a Herbal Wellness Clinic partner and share the power of natural wellness while building your own business.
           </p>
-          
+
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/30 shadow-lg">
               <div className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -152,7 +152,7 @@ export default function Home() {
               <p className="text-white/95 font-medium drop-shadow-md leading-relaxed">Join a network of passionate wellness advocates</p>
             </div>
           </div>
-          
+
           <Link href="/distributor">
             <Button className="bg-white text-forest-green px-8 py-4 hover:bg-gray-100 transition-all duration-300 touch-feedback font-semibold rounded-xl shadow-lg hover:shadow-xl">
               Learn More About Partnership
@@ -165,7 +165,7 @@ export default function Home() {
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">What Our Customers Say</h2>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <Card>
               <CardContent className="p-6">
@@ -190,7 +190,7 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex mb-4">
@@ -214,7 +214,7 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-6">
                 <div className="flex mb-4">
@@ -252,7 +252,7 @@ export default function Home() {
                 Your trusted source for premium natural health products and wellness solutions.
               </p>
             </div>
-            
+
             <div>
               <h5 className="font-semibold mb-4">Products</h5>
               <ul className="space-y-2 text-sm text-gray-300">
@@ -262,7 +262,7 @@ export default function Home() {
                 <li><Link href="/products/skincare" className="hover:text-nature-green transition-colors">Skincare</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h5 className="font-semibold mb-4">Support</h5>
               <ul className="space-y-2 text-sm text-gray-300">
@@ -272,7 +272,7 @@ export default function Home() {
                 <li><a href="#" className="hover:text-nature-green transition-colors">FAQ</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h5 className="font-semibold mb-4">Business</h5>
               <ul className="space-y-2 text-sm text-gray-300">
@@ -283,7 +283,7 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
             <p>&copy; 2024 NatureVital. All rights reserved. | Privacy Policy | Terms of Service</p>
           </div>
